@@ -4,6 +4,8 @@ import * as AntTypes from './types';
 
 import * as T from './t';
 
+import { CommandParser } from '../utils/CommandParser';
+
 
 export class AntCore extends EventEmitter {
 
@@ -21,10 +23,11 @@ export class AntCore extends EventEmitter {
 
         if (!config.getStatus) throw new Error('Ant: config.getStatus not provided! This field is mandatory.');
         if (!config.setStatus) throw new Error('Ant: config.setStatus not provided! This field is mandatory.');
-        config.maskSeparator     = config.maskSeparator || ':'; 
-        config.richPayloadPrefix = config.richPayloadPrefix || '[VCD]';
-        config.startButtonText   = config.startButtonText || 'Start!';
-        config.keyboardSettings  = config.keyboardSettings || { 
+        config.maskSeparator            = config.maskSeparator || ':'; 
+        config.richPayloadPrefix        = config.richPayloadPrefix || '[VCD]';
+        config.startButtonText          = config.startButtonText || 'Start!';
+        config.richPayloadDataSeparator = config.richPayloadDataSeparator || '$:';
+        config.keyboardSettings         = config.keyboardSettings || { 
             backgroundColor: '#FFFFFF', 
             frameColor: '#665CAC', 
             buttonColor: '#FFFFFF',
@@ -40,13 +43,13 @@ export class AntCore extends EventEmitter {
         this.$api = new Viber.Bot({ authToken, name, avatar });
 
         this.Types = {
-            ReplyKeyboardButton: this._ReplyKeyboardButton,
-            RichKeyboardButton:  this._RichKeyboardButton,
-            UrlKeyboardButton:   this._UrlKeyboardButton,
-            TextMessage:         this._TextMessage,
-            Keyboard:            this._Keyboard,
-            RichMedia:           this._RichMedia,
-            Picture:             this._Picture,
+            ReplyKeyboardButton: this._ReplyKeyboardButton.bind(this),
+            RichKeyboardButton:  this._RichKeyboardButton.bind(this),
+            UrlKeyboardButton:   this._UrlKeyboardButton.bind(this),
+            TextMessage:         this._TextMessage.bind(this),
+            Keyboard:            this._Keyboard.bind(this),
+            RichMedia:           this._RichMedia.bind(this),
+            Picture:             this._Picture.bind(this),
         };
 
         this.init();
@@ -71,6 +74,7 @@ export class AntCore extends EventEmitter {
 
     private init() {
         this.addListeners();
+        this.addBasicListeners();
     }
 
     private addListeners() {
@@ -79,29 +83,68 @@ export class AntCore extends EventEmitter {
             const user   = response.userProfile;
             const prefix = this.config.richPayloadPrefix;
             if (text.slice(0, prefix.length) === prefix) {
-                const payload: T.RichPayload = {
-                    data: text.slice(prefix.length),
+                const payload: T.Message = {
+                    payloadData: text.slice(prefix.length),
                     userProfile: user,
                 }
-                this.emit('rich_payload', payload);
+                const command = payload.payloadData.indexOf('?') !== -1 
+                    ? payload.payloadData.slice(0, payload.payloadData.indexOf('?')) 
+                    : payload.payloadData;
+
+                if (Object.keys(this.commands).includes(command)) {
+                    this.commands[command](JSON.stringify(user), CommandParser.parse(text), message);
+                    return;
+                } else {  
+                    this.emit('rich_payload', payload);
+                }
             } else {
-                const message: T.Message = {
-                    text,
-                    userProfile: user,
+                const command = text.indexOf('?') !== -1 ?
+                text.slice(0, text.indexOf('?')) : text;
+    
+                if (Object.keys(this.commands).includes(command)) {
+                    this.commands[command](JSON.stringify(user), CommandParser.parse(text), message);
+                    return;
+                } else {
+                    const data: T.Message = {
+                        text,
+                        userProfile: user,
+                    }
+                    this.emit('message', data);
                 }
-                this.emit('message', message);
             }
         })
-        this.$api.on(Viber.Event.CONVERSATION_STARTED, (userProfile: T.ViberUserProfile,
+        this.$api.onConversationStarted((userProfile: T.ViberUserProfile,
         isSubscribed: boolean, context: any, onFinish: Function) => {
-            const keyboard = this.Types.Keyboard([
-                this.Types.RichKeyboardButton(this.config.startButtonText, '/start')
+            const keyboard = this.Types.RichMedia([
+                this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start')
             ]);
-            onFinish(this.Types.RichMedia(keyboard));
+            onFinish(keyboard);
         })
-        this.$api.on(Viber.Event.ERROR, (err: Error) => {
+        this.$api.on(Viber.Events.ERROR, (err: Error) => {
             this.emit('error', err);
             this.emit('Error', err);
+        })
+        this.$api.on(Viber.Events.MESSAGE_SENT, (message: T.ViberMessage, userProfile: T.ViberUserProfile) => {
+            const text = message.text || '';
+            const data: T.Message = {
+                text,
+                userProfile,
+            }
+            this.emit('message_sent', data);
+        })
+        this.$api.on(Viber.Events.SUBSCRIBED, (response: T.ViberResponse) => {
+            const user = response.userProfile;
+            const data: T.Message = {
+                userProfile: user,
+            }
+            this.emit('subscribed', data);
+        })
+        this.$api.on(Viber.Events.UNSUBSCRIBED, (response: T.ViberResponse) => {
+            const user = response.userProfile;
+            const data: T.Message = {
+                userProfile: user,
+            }
+            this.emit('unsubscribed', data);
         })
     }
 
@@ -121,10 +164,10 @@ export class AntCore extends EventEmitter {
             }
         }
     }
-    private _RichKeyboardButton(text: string, data: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
+    private _RichKeyboardButton(text: string, status: string, data: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
         return {
             ActionType: 'reply',
-            ActionBody: '[VCD]' + data,
+            ActionBody: this.config.richPayloadPrefix + status + this.config.richPayloadDataSeparator + data,
             Text: text,
             Columns: columns,
             Rows: rows,
@@ -183,4 +226,91 @@ export class AntCore extends EventEmitter {
         });
     }
 
+    private addBasicListeners() {
+        const basicEvents: T.AntViberEvent[] = [ 'message', 'message_sent', 'rich_payload', 
+        'subscribed', 'unsubscribed' ];
+        basicEvents.forEach(type => {
+            this.on(type, (messages: T.Message[]) => {
+                const message = messages[0];
+                const user = JSON.stringify(message.userProfile);
+                this.checkStatus(user, type, message.text || message.payloadData || null);
+            })
+        }, this);
+    }
+
+    private checkStatus(user: string, type: T.AntViberEvent, data: string, extra?: any) {
+        this.config.getStatus(user)
+        .then(status => {
+            if ([ 'rich_payload' ].includes(type)) {
+                const richStatus = data.slice(0, data.indexOf(this.config.richPayloadDataSeparator));
+                const payload    = data.slice(data.indexOf(this.config.richPayloadDataSeparator) 
+                                 + this.config.richPayloadDataSeparator.length);
+                
+                if (Object.keys(this.botListeners[type]).includes(richStatus)) {
+                    return this.botListeners[type][richStatus](user, payload, extra);
+                } else {
+                    for (let i in Object.keys(this.botListeners[type])) {
+                        const listener = Object.keys(this.botListeners[type])[i];
+                        if (this.isMask(listener) && this.isMatch(richStatus, listener)) {
+                            return this.botListeners[type][listener](user, payload, this.isMatch(richStatus, listener));
+                        }
+                    }
+                }
+            } else {
+                if (!status) return;
+                this.botListeners[type] = this.botListeners[type] || {}; 
+
+                if (Object.keys(this.botListeners[type]).includes(status)) {
+                    return this.botListeners[type][status](user, data, extra);
+                } else {
+                    for (let i in Object.keys(this.botListeners[type])) {
+                        const listener = Object.keys(this.botListeners[type])[i];
+                        if (this.isMask(listener) && this.isMatch(status, listener)) {
+                            return this.botListeners[type][listener](user, data, this.isMatch(status, listener));
+                        }
+                    }
+                }
+            }
+        })
+        .catch((err: Error) => this.onError(user, err));
+    }
+
+    private onError(user: string, err: Error) {
+        this.emit('Error', Object.assign(err, { userProfile: user }));
+    }
+
+    private isMask(mask: String): Boolean {
+        return mask.split(this.config.maskSeparator).includes('*');
+    }
+
+    private isMatch(status: String, mask: String) {
+        if (mask === '*') return status;
+
+        const statusLevels = status.split(this.config.maskSeparator);
+        const maskLevels   = mask.split(this.config.maskSeparator);
+        let   maskMatch;
+        if (maskLevels.length !== statusLevels.length) {
+            return null;
+        }
+        for (let i = 0; i < maskLevels.length; i++) {
+            if (maskLevels[i] !== '*') {
+                if (maskLevels[i] !== statusLevels[i]) {
+                    return null;
+                }
+            } else {
+                maskMatch = statusLevels[i];
+            }
+        }
+        return maskMatch;
+    }
+
+    public setWebhook(url: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.$api.setWebhook(url).then(resolve).catch(reject);
+        });
+    }
+
+    public middleware() {
+        return this.$api.middleware();
+    }
 }
