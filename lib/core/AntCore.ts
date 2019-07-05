@@ -87,9 +87,8 @@ export class AntCore extends EventEmitter {
                     payloadData: text.slice(prefix.length),
                     userProfile: user,
                 }
-                const command = payload.payloadData.indexOf('?') !== -1 
-                    ? payload.payloadData.slice(0, payload.payloadData.indexOf('?')) 
-                    : payload.payloadData;
+                let command = payload.payloadData.slice(0, payload.payloadData.indexOf(this.config.richPayloadDataSeparator));
+                command = command.indexOf('?') !== -1 ? command.slice(0, command.indexOf('?')) : command;
 
                 if (Object.keys(this.commands).includes(command)) {
                     this.commands[command](JSON.stringify(user), CommandParser.parse(text), message);

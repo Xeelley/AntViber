@@ -85,9 +85,9 @@ var AntCore = (function (_super) {
                     payloadData: text.slice(prefix.length),
                     userProfile: user,
                 };
-                var command = payload.payloadData.indexOf('?') !== -1
-                    ? payload.payloadData.slice(0, payload.payloadData.indexOf('?'))
-                    : payload.payloadData;
+                var command = payload.payloadData.slice(0, payload.payloadData.indexOf(_this.config.richPayloadDataSeparator));
+                command = command.indexOf('?') !== -1 ? command.slice(0, command.indexOf('?')) : command;
+                console.log(command);
                 if (Object.keys(_this.commands).includes(command)) {
                     _this.commands[command](JSON.stringify(user), CommandParser_1.CommandParser.parse(text), message);
                     return;
@@ -249,7 +249,6 @@ var AntCore = (function (_super) {
                 var richStatus = data.slice(0, data.indexOf(_this.config.richPayloadDataSeparator));
                 var payload = data.slice(data.indexOf(_this.config.richPayloadDataSeparator)
                     + _this.config.richPayloadDataSeparator.length);
-                console.log(data, richStatus, payload);
                 if (Object.keys(_this.botListeners[type]).includes(richStatus)) {
                     return _this.botListeners[type][richStatus](user, payload, extra);
                 }
