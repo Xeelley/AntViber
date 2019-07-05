@@ -9,12 +9,12 @@
   This framework is viber adaptation of <a href="https://www.npmjs.com/package/ant-telegram">Ant:Telegram</a>.
 </p>
 <p align="center">
-    <!-- <a href="https://www.npmjs.com/package/ant-viber">
+    <a href="https://www.npmjs.com/package/ant-viber">
         <img src="https://img.shields.io/node/v/ant-viber.svg">
-    </a> -->
-    <!-- <a href="https://www.npmjs.com/package/ant-viber">
+    </a>
+    <a href="https://www.npmjs.com/package/ant-viber">
         <img src="https://img.shields.io/npm/v/ant-viber.svg">
-    </a> -->
+    </a>
     <a href="https://travis-ci.org/Xeelley/AntViber">
         <img src="https://travis-ci.org/Xeelley/AntViber.svg?branch=master">
     </a>
