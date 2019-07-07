@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
 var Viber = require("viber-bot");
 var CommandParser_1 = require("../utils/CommandParser");
+var ConfigBulder_1 = require("../utils/ConfigBulder");
 var AntCore = (function (_super) {
     __extends(AntCore, _super);
     function AntCore(authToken, name, avatar, config) {
@@ -26,21 +27,7 @@ var AntCore = (function (_super) {
             throw new Error('Ant: config.getStatus not provided! This field is mandatory.');
         if (!config.setStatus)
             throw new Error('Ant: config.setStatus not provided! This field is mandatory.');
-        config.maskSeparator = config.maskSeparator || ':';
-        config.richPayloadPrefix = config.richPayloadPrefix || '[VCD]';
-        config.startButtonText = config.startButtonText || 'Start!';
-        config.richPayloadDataSeparator = config.richPayloadDataSeparator || '$:';
-        config.keyboardSettings = config.keyboardSettings || {
-            backgroundColor: '#FFFFFF',
-            frameColor: '#665CAC',
-            buttonColor: '#FFFFFF',
-            BorderWidth: 2,
-        };
-        config.keyboardSettings.backgroundColor = config.keyboardSettings.backgroundColor || '#FFFFFF';
-        config.keyboardSettings.frameColor = config.keyboardSettings.frameColor || '#665CAC';
-        config.keyboardSettings.buttonColor = config.keyboardSettings.buttonColor || '#FFFFFF';
-        config.keyboardSettings.BorderWidth = config.keyboardSettings.BorderWidth || 2;
-        _this.config = config;
+        _this.config = ConfigBulder_1.Config(config);
         _this.$api = new Viber.Bot({ authToken: authToken, name: name, avatar: avatar });
         _this.Types = {
             ReplyKeyboardButton: _this._ReplyKeyboardButton.bind(_this),
@@ -57,8 +44,8 @@ var AntCore = (function (_super) {
     AntCore.prototype.command = function (command, method) {
         this.commands[command] = method;
     };
-    AntCore.prototype.status = function (chat_id, status) {
-        return this.config.setStatus(chat_id, status);
+    AntCore.prototype.status = function (user, status) {
+        return this.config.setStatus(user, status);
     };
     AntCore.prototype.on = function (event, listener) {
         _super.prototype.on.call(this, event, listener);
@@ -80,14 +67,63 @@ var AntCore = (function (_super) {
             var text = message.text || '';
             var user = response.userProfile;
             var prefix = _this.config.richPayloadPrefix;
-            if (text.slice(0, prefix.length) === prefix) {
+            if (message.url && message.thumbnail) {
+                var data = {
+                    picture: {
+                        url: message.url,
+                        thumbnail: message.thumbnail,
+                        caption: message.text,
+                    },
+                    userProfile: user,
+                };
+                _this.emit('picture', data);
+            }
+            else if (message.url && message.filename && message.sizeInBytes) {
+                var data = {
+                    file: {
+                        url: message.url,
+                        filename: message.filename,
+                        size: message.sizeInBytes,
+                    },
+                    userProfile: user,
+                };
+                _this.emit('file', data);
+            }
+            else if (message.latitude && message.longitude) {
+                var data = {
+                    location: {
+                        longitude: message.longitude,
+                        latitude: message.latitude,
+                    },
+                    userProfile: user,
+                };
+                _this.emit('location', data);
+            }
+            else if (message.contactName && message.contactPhoneNumber) {
+                var data = {
+                    contact: {
+                        name: message.contactName,
+                        phone: message.contactPhoneNumber,
+                        avatar: message.contactAvatar,
+                    },
+                    userProfile: user,
+                };
+                _this.emit('contact', data);
+            }
+            else if (message.stickerId) {
+                var data = {
+                    stickerId: message.stickerId,
+                    userProfile: user,
+                };
+                _this.emit('sticker', data);
+            }
+            else if (text.slice(0, prefix.length) === prefix) {
                 var payload = {
                     payloadData: text.slice(prefix.length),
                     userProfile: user,
                 };
                 var command = payload.payloadData.slice(0, payload.payloadData.indexOf(_this.config.richPayloadDataSeparator));
                 command = command.indexOf('?') !== -1 ? command.slice(0, command.indexOf('?')) : command;
-                console.log(command);
                 if (Object.keys(_this.commands).includes(command)) {
                     _this.commands[command](JSON.stringify(user), CommandParser_1.CommandParser.parse(text), message);
                     return;
@@ -154,7 +190,7 @@ var AntCore = (function (_super) {
             Text: text,
             Columns: columns,
             Rows: rows,
-            BgColor: this.config.keyboardSettings.backgroundColor,
+            BgColor: this.config.keyboardSettings.buttonColor,
             Frame: {
                 BorderWidth: this.config.keyboardSettings.BorderWidth,
                 BorderColor: this.config.keyboardSettings.frameColor,
@@ -170,7 +206,7 @@ var AntCore = (function (_super) {
             Text: text,
             Columns: columns,
             Rows: rows,
-            BgColor: this.config.keyboardSettings.backgroundColor,
+            BgColor: this.config.keyboardSettings.buttonColor,
             Frame: {
                 BorderWidth: this.config.keyboardSettings.BorderWidth,
                 BorderColor: this.config.keyboardSettings.frameColor,
@@ -186,7 +222,7 @@ var AntCore = (function (_super) {
             Text: text,
             Columns: columns,
             Rows: rows,
-            BgColor: this.config.keyboardSettings.backgroundColor,
+            BgColor: this.config.keyboardSettings.buttonColor,
             Frame: {
                 BorderWidth: this.config.keyboardSettings.BorderWidth,
                 BorderColor: this.config.keyboardSettings.frameColor,
@@ -231,13 +267,60 @@ var AntCore = (function (_super) {
     };
     AntCore.prototype.addBasicListeners = function () {
         var _this = this;
-        var basicEvents = ['message', 'message_sent', 'rich_payload',
-            'subscribed', 'unsubscribed'];
-        basicEvents.forEach(function (type) {
+        ['subscribed', 'unsubscribed'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
                 var user = JSON.stringify(message.userProfile);
-                _this.checkStatus(user, type, message.text || message.payloadData || null);
+                _this.checkStatus(user, type);
+            });
+        }, this);
+        ['message', 'message_sent'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.text);
+            });
+        }, this);
+        ['rich_payload'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.payloadData);
+            });
+        }, this);
+        ['picture'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.picture);
+            });
+        }, this);
+        ['sticker'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.stickerId);
+            });
+        }, this);
+        ['file'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.file);
+            });
+        }, this);
+        ['location'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.location);
+            });
+        }, this);
+        ['contact'].forEach(function (type) {
+            _this.on(type, function (messages) {
+                var message = messages[0];
+                var user = JSON.stringify(message.userProfile);
+                _this.checkStatus(user, type, message.contact);
             });
         }, this);
     };

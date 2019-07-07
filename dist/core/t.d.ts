@@ -1,6 +1,6 @@
 export interface AntViberConfig {
-    getStatus: (chat_id: string) => Promise<string>;
-    setStatus: (chat_id: string, status: string) => Promise<any>;
+    getStatus: (user: string) => Promise<string>;
+    setStatus: (user: string, status: string) => Promise<any>;
     maskSeparator?: string;
     richPayloadPrefix?: string;
     keyboardSettings?: ViberKeyboardConfig;
@@ -21,17 +21,43 @@ export interface Listeners {
 export interface Commands {
     [key: string]: CommandCallback;
 }
-export interface ListenerCallback {
-    (user: string, data: string, mask?: String): void;
-}
 export interface CommandCallback {
     (user: string, params: {
         [index: string]: string;
     }, message: ViberMessage): void;
 }
-export declare type AntViberEvent = 'rich_payload' | 'message' | 'error' | 'message_sent' | 'subscribed' | 'unsubscribed' | 'Error';
+export declare type AntViberEvent = 'rich_payload' | 'message' | 'error' | 'message_sent' | 'subscribed' | 'picture' | 'file' | 'contact' | 'sticker' | 'location' | 'unsubscribed' | 'Error';
+export interface ViberLocation {
+    latitude: number;
+    longitude: number;
+}
+export interface ViberContact {
+    name: string;
+    phone: string;
+    avatar?: string;
+}
+export interface ViberPicture {
+    url: string;
+    thumbnail: string;
+    caption?: string;
+}
+export interface ViberFile {
+    url: string;
+    filename: string;
+    size: number;
+}
 export interface ViberMessage {
     text?: string;
+    url?: string;
+    thumbnail?: string;
+    sizeInBytes?: number;
+    stickerId?: number;
+    filename?: string;
+    latitude?: number;
+    longitude?: number;
+    contactName?: string;
+    contactPhoneNumber?: string;
+    contactAvatar?: string;
 }
 export interface ViberResponse {
     userProfile: ViberUserProfile;
@@ -47,4 +73,9 @@ export interface Message {
     text?: string;
     userProfile: ViberUserProfile;
     payloadData?: string;
+    stickerId?: number;
+    location?: ViberLocation;
+    contact?: ViberContact;
+    picture?: ViberPicture;
+    file?: ViberFile;
 }

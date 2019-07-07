@@ -30,6 +30,7 @@ About:
 - [Ant anatomy](#Ant-anatomy) 
 - [Rich media, payload data handling](#rich-media-payload-data-handling)
 - [Config](#Config)
+- [Examples](#Examples)
 
 
 ## Basic features ##
@@ -60,15 +61,15 @@ setStatus(userProfile: String, status: String): Promise<any>;
 
 **Notice**: userProfile may be stringified object using `JSON.stringify`.
 
-Just put in on Ant:Telegram initialization with viber bot access token, bot name and avatar link:
+Just put in on Ant:Viber initialization with viber bot access token, bot name and avatar link:
 ```js
-const { AntTelegram } = require('ant-telegram');
+const { AntViber } = require('ant-viber');
 
 const bot_token  = '...'; // Your viber bot access token token
 const bot_name   = 'my_bot';
 const bot_avatar = 'https://www.domain.com/avatar.jpg'; // Image direct link
 
-const Ant = new AntTelegram(bot_token, bot_name, bot_avatar, { 
+const Ant = new AntViber(bot_token, bot_name, bot_avatar, { 
     getStatus: (userProfile) => { ... }, 
     setStatus: (userProfile, status) => { ... },
 });
@@ -76,7 +77,7 @@ const Ant = new AntTelegram(bot_token, bot_name, bot_avatar, {
 
 **Notice**: you must pass empty string (`''`) if you don't need to override avatar for viber client or viber admin pannel:
 ```js
-const Ant = new AntTelegram(bot_token, bot_name, '', { ... })
+const Ant = new AntViber(bot_token, bot_name, '', { ... })
 ```
 
 Explore quick start [example](docs/mongo-status-example.md) using [MongoDB](https://www.mongodb.com/) + [mongoose](https://www.npmjs.com/package/mongoose).
@@ -91,6 +92,8 @@ app.use(webhookUrl, Ant.middleware());
 await Ant.setWebhook('https://www.domain.com' + webhookUrl);
 app.listen(...)
 ```
+
+**Notice:** https support required for viber webhook. Self-signed SSL certificates not supported!
 
 Now you ready to use Ant:Viber.
 
@@ -126,7 +129,7 @@ Error handling:
 Ant.on('error', err => { ... })
 ```
 
-Also Ant:Telegram has `Error` generalization:
+Also Ant:Viber has `Error` generalization:
 ```js
 Ant.on('Error', err => { ... })
 ```
@@ -142,10 +145,10 @@ await Ant.status(userProfile, 'my_status');
 
 And add listener for this status: 
 ```js
-Ant.add('message', 'my_status', (userProfile, text) => { ... })
+Ant.add('sticker', 'my_status', (userProfile, stickerId) => { ... }) 
 ```
 First argument is user interaction type, second - our status, third - callback.  
-Callback will invoke every time when user with this status send text message to bot.  
+Callback will invoke every time when user with this status send sticker to bot.  
 Full list of available types and callbacks you can check [here](docs/event-types.md).
 
 
@@ -159,7 +162,8 @@ Command may contain `/` if needed (example: `/start`).
 Callback will invoke every time when user send this command to chat (either as text message or from rich message payload). Status will be ignored (works with any user's status).  
   
 `Ant.command` support url params for commant that will returns as `params` in callback. Empty object will returns if params not provided.  
-For example:
+For example:  
+
 | User input | `params` value |
 |---|---|
 | `/cmd` | `{}` |
@@ -189,7 +193,7 @@ Callback will invoke for any text message send by user with any item in status.
 ### Builders ### 
 See `Ant.Types`
 
-Ant:Telegram simplifies api methods and types usage with builders.  
+Ant:Viber simplifies api methods and types usage with builders.  
 Let's check an example:
 ```js
 await Ant.sendMessage(userProfile, [
@@ -235,7 +239,7 @@ So payload for expample will be equal to `'gift$:red'`.
 
 
 ## Config ##
-Ant:Telegram init config contain next fields:
+Ant:Viber init config contain next fields:
 
 | field | type | description |
 |-------|------|-------------|
@@ -249,3 +253,7 @@ Ant:Telegram init config contain next fields:
 | `keyboardSettings.frameColor` | `string` | RGA or HEX color of button frame 
 | `keyboardSettings.buttonColor` | `string` | RGA or HEX color of button (background color)
 | `keyboardSettings.BorderWidth` | `number` | Button border width in pixels (`2` by default, `0` for hide border)
+
+
+## Examples ##
+- [Location Echo Bot](examples/location-echo-bot.md) - echo bot (using Express.js) that send longitude & latitude to user, every time when user sent location.

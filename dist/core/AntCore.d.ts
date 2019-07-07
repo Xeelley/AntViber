@@ -10,7 +10,7 @@ export declare class AntCore extends EventEmitter {
     protected commands: T.Commands;
     constructor(authToken: string, name: string, avatar: string, config: T.AntViberConfig);
     command(command: string, method: T.CommandCallback): void;
-    status(chat_id: string, status: string): Promise<any>;
+    status(user: string, status: string): Promise<any>;
     on(event: T.AntViberEvent, listener: (...args: any[]) => void): any;
     emit(event: T.AntViberEvent, ...args: any[]): any;
     private init;
