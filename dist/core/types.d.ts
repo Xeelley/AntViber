@@ -27,6 +27,12 @@ export interface ITypes {
     Keyboard(buttons: IButton[], rows?: number): Viber.Message.Keyboard;
     RichMedia(buttons: IButton[], rows?: number): Viber.Message.RichMedia;
     Picture(url: string, caption?: string): Viber.Message.Picture;
+    Url(url: string): Viber.Message.Url;
+    Contact(name: string, phone: string, avatar?: string): Viber.Message.Contact;
+    Video(url: string, size: string, caption?: string, thumbnail?: string, duration?: number): Viber.Message.Video;
+    Location(latitude: number, longitude: number): Viber.Message.Location;
+    Sticker(stickerId: number): Viber.Message.Sticker;
+    File(url: string, size: number, filename: string): Viber.Message.File;
 }
-export declare type MessageType = Viber.Message.Text | Viber.Message.Keyboard | Viber.Message.RichMedia | Viber.Message.Picture;
+export declare type MessageType = Viber.Message.Text | Viber.Message.Keyboard | Viber.Message.RichMedia | Viber.Message.Picture | Viber.Message.Url | Viber.Message.Contact | Viber.Message.Video | Viber.Message.Location | Viber.Message.Sticker | Viber.Message.File;
 export {};

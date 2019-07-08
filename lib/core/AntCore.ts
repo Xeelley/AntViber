@@ -36,6 +36,12 @@ export class AntCore extends EventEmitter {
             Keyboard:            this._Keyboard.bind(this),
             RichMedia:           this._RichMedia.bind(this),
             Picture:             this._Picture.bind(this),
+            Url:                 this._Url.bind(this),
+            Contact:             this._Contact.bind(this),
+            Video:               this._Video.bind(this),
+            Location:            this._Location.bind(this),
+            Sticker:             this._Sticker.bind(this),
+            File:                this._File.bind(this),
         };
 
         this.init();
@@ -232,18 +238,37 @@ export class AntCore extends EventEmitter {
             ButtonsGroupRows: rows,
         }
     }
-    private _TextMessage(text: string): Viber.Message.Text {
-        return new Viber.Message.Text(text);
-    }
     private _Keyboard(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.Keyboard {
         return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows));
     }
     private _RichMedia(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.RichMedia {
         return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows));
     }
-    private _Picture(url: string, caption?: string): Viber.Message.Picture {
-        return new Viber.Message.Picture(url, caption);
+    private _TextMessage(text: string): Viber.Message.Text {
+        return new Viber.Message.Text(text);
     }
+    private _Picture(url: string, caption?: string, thumbnail?: string): Viber.Message.Picture {
+        return new Viber.Message.Picture(url, caption, thumbnail);
+    }
+    private _Url(url: string): Viber.Message.Url {
+        return new Viber.Message.Url(url);
+    }
+    private _Contact(name: string, phone: string, avatar?: string): Viber.Message.Contact {
+        return new Viber.Message.Contact(name, phone, avatar);
+    }
+    private _Video(url: string, size: string, caption?: string, thumbnail?: string, duration?: number): Viber.Message.Video {
+        return new Viber.Message.Video(url, size, caption, thumbnail, duration);
+    }
+    private _Location(latitude: number, longitude: number): Viber.Message.Location {
+        return new Viber.Message.Location(latitude, longitude);
+    }
+    private _Sticker(stickerId: number): Viber.Message.Sticker {
+        return new Viber.Message.Sticker(stickerId);
+    }
+    private _File(url: string, size: number, filename: string): Viber.Message.File {
+        return new Viber.Message.File(url, size, filename);
+    }
+
 
     public sendMessage(userProfile: string, messages: AntTypes.MessageType[]): Promise<void> {
         const user = JSON.parse(userProfile);

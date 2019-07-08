@@ -37,6 +37,12 @@ var AntCore = (function (_super) {
             Keyboard: _this._Keyboard.bind(_this),
             RichMedia: _this._RichMedia.bind(_this),
             Picture: _this._Picture.bind(_this),
+            Url: _this._Url.bind(_this),
+            Contact: _this._Contact.bind(_this),
+            Video: _this._Video.bind(_this),
+            Location: _this._Location.bind(_this),
+            Sticker: _this._Sticker.bind(_this),
+            File: _this._File.bind(_this),
         };
         _this.init();
         return _this;
@@ -239,9 +245,6 @@ var AntCore = (function (_super) {
             ButtonsGroupRows: rows,
         };
     };
-    AntCore.prototype._TextMessage = function (text) {
-        return new Viber.Message.Text(text);
-    };
     AntCore.prototype._Keyboard = function (buttons, rows) {
         if (rows === void 0) { rows = 1; }
         return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows));
@@ -250,8 +253,29 @@ var AntCore = (function (_super) {
         if (rows === void 0) { rows = 1; }
         return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows));
     };
-    AntCore.prototype._Picture = function (url, caption) {
-        return new Viber.Message.Picture(url, caption);
+    AntCore.prototype._TextMessage = function (text) {
+        return new Viber.Message.Text(text);
+    };
+    AntCore.prototype._Picture = function (url, caption, thumbnail) {
+        return new Viber.Message.Picture(url, caption, thumbnail);
+    };
+    AntCore.prototype._Url = function (url) {
+        return new Viber.Message.Url(url);
+    };
+    AntCore.prototype._Contact = function (name, phone, avatar) {
+        return new Viber.Message.Contact(name, phone, avatar);
+    };
+    AntCore.prototype._Video = function (url, size, caption, thumbnail, duration) {
+        return new Viber.Message.Video(url, size, caption, thumbnail, duration);
+    };
+    AntCore.prototype._Location = function (latitude, longitude) {
+        return new Viber.Message.Location(latitude, longitude);
+    };
+    AntCore.prototype._Sticker = function (stickerId) {
+        return new Viber.Message.Sticker(stickerId);
+    };
+    AntCore.prototype._File = function (url, size, filename) {
+        return new Viber.Message.File(url, size, filename);
     };
     AntCore.prototype.sendMessage = function (userProfile, messages) {
         var _this = this;

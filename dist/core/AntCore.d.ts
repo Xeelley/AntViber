@@ -19,10 +19,16 @@ export declare class AntCore extends EventEmitter {
     private _RichKeyboardButton;
     private _UrlKeyboardButton;
     private _AnyKeyboard;
-    private _TextMessage;
     private _Keyboard;
     private _RichMedia;
+    private _TextMessage;
     private _Picture;
+    private _Url;
+    private _Contact;
+    private _Video;
+    private _Location;
+    private _Sticker;
+    private _File;
     sendMessage(userProfile: string, messages: AntTypes.MessageType[]): Promise<void>;
     private addBasicListeners;
     private checkStatus;

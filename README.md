@@ -194,7 +194,7 @@ Callback will invoke for any text message send by user with any item in status.
 See `Ant.Types`
 
 Ant:Viber simplifies api methods and types usage with builders.  
-Let's check an example:
+Let's check examples:
 ```js
 await Ant.sendMessage(userProfile, [
     Ant.Types.TextMessage('Am I cool?'),
@@ -203,11 +203,19 @@ await Ant.sendMessage(userProfile, [
         Ant.Types.RichKeyboardButton('No-no-no', 'coolmenu:no'),
     ], 2)
 ])
+
+await Ant.sendMessage(userProfile, [
+    new Ant.Types.Location(41.2362873, -87.6504762),
+    new Ant.Types.Url('https://www.google.com'),
+])
 ```
-Here we are using builders instead of define `options` object.  
-This code will send rich media with two buttons:  
+In first example we use builders instead of define `options` object. This code will send rich media with two buttons:  
 
 <img src="assets/chat_02.jpg" align="center" width="300px">
+
+In second example we use types which don't need extra options.  
+  
+**Notice:** types without extra options can be used either as functions or as classes (with `new`). Types with extra options (`RichMedia`, `Keyboard`, `ReplyKeyboardButton`, `RichKeyboardButton`, `UrlKeyboardButton`) can't be used as classes for context lossing preventing.
 
 
 ## Rich media, payload data handling ##

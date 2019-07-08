@@ -29,7 +29,8 @@ const settings = {
 
 // create ant instance
 const Ant = new AntViber(settings.token, settings.name, settings.avatar, {
-    setStatus, getStatus,
+    setStatus: settings.setStatus, 
+    getStatus: settings.getStatus,
     keyboardSettings: {
         buttonColor: '#a0b6d9',
         BorderWidth: 0,
