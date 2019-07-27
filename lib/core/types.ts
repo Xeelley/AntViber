@@ -27,7 +27,7 @@ export interface ITypes {
     ShareLocationButton(text: string, columns?: number, rows?: number): IButton;
     SharePhoneButton(text: string, columns?: number, rows?: number): IButton;
     Keyboard(buttons: IButton[]): Viber.Message.Keyboard;
-    RichMedia(buttons: IButton[]): Viber.Message.RichMedia;
+    RichMedia(buttons: IButton[], rows?: number): Viber.Message.RichMedia;
     TextMessage(text: string): Viber.Message.Text;
     Picture(url: string, caption?: string): Viber.Message.Picture;
     Url(url: string): Viber.Message.Url;
