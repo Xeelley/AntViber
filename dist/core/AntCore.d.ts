@@ -19,6 +19,7 @@ export declare class AntCore extends EventEmitter {
     private _RichKeyboardButton;
     private _UrlKeyboardButton;
     private _ShareLocationButton;
+    private _SharePhoneButton;
     private _AnyKeyboard;
     private _Keyboard;
     private _RichMedia;

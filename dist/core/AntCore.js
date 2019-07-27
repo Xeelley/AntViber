@@ -34,6 +34,7 @@ var AntCore = (function (_super) {
             RichKeyboardButton: _this._RichKeyboardButton.bind(_this),
             UrlKeyboardButton: _this._UrlKeyboardButton.bind(_this),
             ShareLocationButton: _this._ShareLocationButton.bind(_this),
+            SharePhoneButton: _this._SharePhoneButton.bind(_this),
             TextMessage: _this._TextMessage.bind(_this),
             Keyboard: _this._Keyboard.bind(_this),
             RichMedia: _this._RichMedia.bind(_this),
@@ -106,7 +107,7 @@ var AntCore = (function (_super) {
                 };
                 _this.emit('location', data);
             }
-            else if (message.contactName && message.contactPhoneNumber) {
+            else if (message.contactName || message.contactPhoneNumber) {
                 var data = {
                     contact: {
                         name: message.contactName,
@@ -236,22 +237,35 @@ var AntCore = (function (_super) {
             BgColor: this.config.keyboardSettings.buttonColor,
         };
     };
-    AntCore.prototype._AnyKeyboard = function (buttons, rows) {
+    AntCore.prototype._SharePhoneButton = function (text, columns, rows) {
+        if (columns === void 0) { columns = 6; }
         if (rows === void 0) { rows = 1; }
         return {
+            ActionType: 'share-phone',
+            ActionBody: text,
+            Text: text,
+            Columns: columns,
+            Rows: rows,
+            BgColor: this.config.keyboardSettings.buttonColor,
+        };
+    };
+    AntCore.prototype._AnyKeyboard = function (buttons, rows) {
+        var keyboard = {
             Type: 'keyboard',
             Revision: 1,
             BgColor: this.config.keyboardSettings.backgroundColor,
             Buttons: buttons,
         };
+        if (rows)
+            keyboard.ButtonsGroupRows = rows;
+        return keyboard;
     };
-    AntCore.prototype._Keyboard = function (buttons, rows) {
-        if (rows === void 0) { rows = 1; }
-        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows), null, null, null, 3);
+    AntCore.prototype._Keyboard = function (buttons) {
+        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons), null, null, null, 3);
     };
     AntCore.prototype._RichMedia = function (buttons, rows) {
         if (rows === void 0) { rows = 1; }
-        return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows));
+        return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows), null, null, null, 3);
     };
     AntCore.prototype._TextMessage = function (text) {
         return new Viber.Message.Text(text);

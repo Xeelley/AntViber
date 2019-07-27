@@ -33,6 +33,7 @@ export class AntCore extends EventEmitter {
             RichKeyboardButton:  this._RichKeyboardButton.bind(this),
             UrlKeyboardButton:   this._UrlKeyboardButton.bind(this),
             ShareLocationButton: this._ShareLocationButton.bind(this),
+            SharePhoneButton:    this._SharePhoneButton.bind(this),
             TextMessage:         this._TextMessage.bind(this),
             Keyboard:            this._Keyboard.bind(this),
             RichMedia:           this._RichMedia.bind(this),
@@ -75,7 +76,7 @@ export class AntCore extends EventEmitter {
             const text   = message.text || '';
             const user   = response.userProfile;
             const prefix = this.config.richPayloadPrefix;
-            
+           
             if (message.url && message.thumbnail) {
                 const data: T.Message = {
                     picture: {
@@ -105,7 +106,7 @@ export class AntCore extends EventEmitter {
                     userProfile: user,
                 }
                 this.emit('location', data);
-            } else if (message.contactName && message.contactPhoneNumber) {
+            } else if (message.contactName || message.contactPhoneNumber) {
                 const data: T.Message = {
                     contact: {
                         name:   message.contactName,
@@ -228,19 +229,31 @@ export class AntCore extends EventEmitter {
             BgColor: this.config.keyboardSettings.buttonColor,
         }
     }
-    private _AnyKeyboard(buttons: AntTypes.IButton[], rows: number = 1): AntTypes.IKeyboard {
+    private _SharePhoneButton(text: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
         return {
+            ActionType: 'share-phone',
+            ActionBody: text,
+            Text: text,
+            Columns: columns,
+            Rows: rows,
+            BgColor: this.config.keyboardSettings.buttonColor,
+        }
+    }
+    private _AnyKeyboard(buttons: AntTypes.IButton[], rows?: number): AntTypes.IKeyboard {
+        const keyboard: AntTypes.IKeyboard = {
             Type: 'keyboard',
             Revision: 1,
             BgColor: this.config.keyboardSettings.backgroundColor,
             Buttons: buttons,
         }
+        if (rows) keyboard.ButtonsGroupRows = rows;
+        return keyboard;
     }
-    private _Keyboard(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.Keyboard {
-        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows), null, null, null, 3);
+    private _Keyboard(buttons: AntTypes.IButton[]): Viber.Message.Keyboard {
+        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons), null, null, null, 3);
     }
     private _RichMedia(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.RichMedia {
-        return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows));
+        return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows), null, null, null, 3);
     }
     private _TextMessage(text: string): Viber.Message.Text {
         return new Viber.Message.Text(text);

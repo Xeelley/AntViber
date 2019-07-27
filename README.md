@@ -9,6 +9,9 @@
   This framework is viber adaptation of <a href="https://www.npmjs.com/package/ant-telegram">Ant:Telegram</a>.
 </p>
 <p align="center">
+    <a href="https://developers.viber.com/docs/api/rest-bot-api/">
+        <img src="https://img.shields.io/badge/API%20Version-3-00aced.svg">
+    </a>
     <a href="https://www.npmjs.com/package/ant-viber">
         <img src="https://img.shields.io/node/v/ant-viber.svg">
     </a>
@@ -258,9 +261,9 @@ Ant:Viber init config contain next fields:
 | `startButtonText` | `string` | Text on dialog start button (when new user subcribed), see [basic usage](#Basic-usage) 
 | `richPayloadDataSeparator` | `string` | See [Rich media, payload data handling](#rich-media-payload-data-handling)
 | `keyboardSettings.backgroundColor` | `string` | RGA or HEX color of button panels (both reply and rich media) background
-| `keyboardSettings.frameColor` | `string` | RGA or HEX color of button frame 
 | `keyboardSettings.buttonColor` | `string` | RGA or HEX color of button (background color)
-| `keyboardSettings.BorderWidth` | `number` | Button border width in pixels (`2` by default, `0` for hide border)
+| `keyboardSettings.frameColor` | `string` | **Deprecated (v.<3.0.0)** RGA or HEX color of button frame 
+| `keyboardSettings.BorderWidth` | `number` | **Deprecated (v.<3.0.0)** Button border width in pixels (`2` by default, `0` for hide border)
 
 
 ## Examples ##
