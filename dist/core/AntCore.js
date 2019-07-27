@@ -33,6 +33,7 @@ var AntCore = (function (_super) {
             ReplyKeyboardButton: _this._ReplyKeyboardButton.bind(_this),
             RichKeyboardButton: _this._RichKeyboardButton.bind(_this),
             UrlKeyboardButton: _this._UrlKeyboardButton.bind(_this),
+            ShareLocationButton: _this._ShareLocationButton.bind(_this),
             TextMessage: _this._TextMessage.bind(_this),
             Keyboard: _this._Keyboard.bind(_this),
             RichMedia: _this._RichMedia.bind(_this),
@@ -197,10 +198,6 @@ var AntCore = (function (_super) {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Frame: {
-                BorderWidth: this.config.keyboardSettings.BorderWidth,
-                BorderColor: this.config.keyboardSettings.frameColor,
-            }
         };
     };
     AntCore.prototype._RichKeyboardButton = function (text, status, data, columns, rows) {
@@ -213,10 +210,6 @@ var AntCore = (function (_super) {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Frame: {
-                BorderWidth: this.config.keyboardSettings.BorderWidth,
-                BorderColor: this.config.keyboardSettings.frameColor,
-            }
         };
     };
     AntCore.prototype._UrlKeyboardButton = function (text, url, columns, rows) {
@@ -229,10 +222,18 @@ var AntCore = (function (_super) {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Frame: {
-                BorderWidth: this.config.keyboardSettings.BorderWidth,
-                BorderColor: this.config.keyboardSettings.frameColor,
-            }
+        };
+    };
+    AntCore.prototype._ShareLocationButton = function (text, columns, rows) {
+        if (columns === void 0) { columns = 6; }
+        if (rows === void 0) { rows = 1; }
+        return {
+            ActionType: 'location-picker',
+            ActionBody: text,
+            Text: text,
+            Columns: columns,
+            Rows: rows,
+            BgColor: this.config.keyboardSettings.buttonColor,
         };
     };
     AntCore.prototype._AnyKeyboard = function (buttons, rows) {
@@ -242,12 +243,11 @@ var AntCore = (function (_super) {
             Revision: 1,
             BgColor: this.config.keyboardSettings.backgroundColor,
             Buttons: buttons,
-            ButtonsGroupRows: rows,
         };
     };
     AntCore.prototype._Keyboard = function (buttons, rows) {
         if (rows === void 0) { rows = 1; }
-        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows));
+        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows), null, null, null, 3);
     };
     AntCore.prototype._RichMedia = function (buttons, rows) {
         if (rows === void 0) { rows = 1; }

@@ -32,6 +32,7 @@ export class AntCore extends EventEmitter {
             ReplyKeyboardButton: this._ReplyKeyboardButton.bind(this),
             RichKeyboardButton:  this._RichKeyboardButton.bind(this),
             UrlKeyboardButton:   this._UrlKeyboardButton.bind(this),
+            ShareLocationButton: this._ShareLocationButton.bind(this),
             TextMessage:         this._TextMessage.bind(this),
             Keyboard:            this._Keyboard.bind(this),
             RichMedia:           this._RichMedia.bind(this),
@@ -195,10 +196,6 @@ export class AntCore extends EventEmitter {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Frame: {
-                BorderWidth: this.config.keyboardSettings.BorderWidth,
-                BorderColor: this.config.keyboardSettings.frameColor,
-            }
         }
     }
     private _RichKeyboardButton(text: string, status: string, data: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
@@ -209,10 +206,6 @@ export class AntCore extends EventEmitter {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Frame: {
-                BorderWidth: this.config.keyboardSettings.BorderWidth,
-                BorderColor: this.config.keyboardSettings.frameColor,
-            }
         }
     }
     private _UrlKeyboardButton(text: string, url: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
@@ -223,10 +216,16 @@ export class AntCore extends EventEmitter {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Frame: {
-                BorderWidth: this.config.keyboardSettings.BorderWidth,
-                BorderColor: this.config.keyboardSettings.frameColor,
-            }
+        }
+    }
+    private _ShareLocationButton(text: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
+        return {
+            ActionType: 'location-picker',
+            ActionBody: text,
+            Text: text,
+            Columns: columns,
+            Rows: rows,
+            BgColor: this.config.keyboardSettings.buttonColor,
         }
     }
     private _AnyKeyboard(buttons: AntTypes.IButton[], rows: number = 1): AntTypes.IKeyboard {
@@ -235,11 +234,10 @@ export class AntCore extends EventEmitter {
             Revision: 1,
             BgColor: this.config.keyboardSettings.backgroundColor,
             Buttons: buttons,
-            ButtonsGroupRows: rows,
         }
     }
     private _Keyboard(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.Keyboard {
-        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows));
+        return new Viber.Message.Keyboard(this._AnyKeyboard(buttons, rows), null, null, null, 3);
     }
     private _RichMedia(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.RichMedia {
         return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows));

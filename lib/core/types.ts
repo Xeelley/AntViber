@@ -6,10 +6,9 @@ export interface IKeyboard {
     Revision: 1;
     BgColor: string;
     Buttons: IButton[];
-    ButtonsGroupRows: number;
 }
 
-type IButtonActionType = 'open-url' | 'reply';
+type IButtonActionType = 'open-url' | 'reply' | 'location-picker' | 'share-phone';
 
 export interface IButton {
     ActionType: IButtonActionType;
@@ -18,16 +17,13 @@ export interface IButton {
     Columns: number;
     Rows: number;
     BgColor: string;
-    Frame: {
-        BorderWidth: number,
-        BorderColor: string,
-    }
 }
 
 export interface ITypes {
     ReplyKeyboardButton(text: string, columns?: number, rows?: number): IButton;
     RichKeyboardButton(text: string, status: string, data: string, columns?: number, rows?: number): IButton;
     UrlKeyboardButton(text: string, url: string, columns?: number, rows?: number): IButton;
+    ShareLocationButton(text: string, columns?: number, rows?: number): IButton;
     Keyboard(buttons: IButton[], rows?: number): Viber.Message.Keyboard;
     RichMedia(buttons: IButton[], rows?: number): Viber.Message.RichMedia;
     TextMessage(text: string): Viber.Message.Text;
