@@ -6,6 +6,7 @@ import * as T from './t';
 
 import { CommandParser } from '../utils/CommandParser';
 import { Config }        from '../utils/ConfigBulder';
+import { rejects } from 'assert';
 
 
 export class AntCore extends EventEmitter {
@@ -282,15 +283,15 @@ export class AntCore extends EventEmitter {
 
 
     public sendMessage(userProfile: string, messages: AntTypes.MessageType[]): Promise<void> {
-        const user = JSON.parse(userProfile);
-        return new Promise((resolve, reject) => {
-            this.$api.sendMessage(user, messages)
-            .then(resolve)
-            .catch((err: Error) => {
-                this.emit('error', err);
-                return reject(err);
+        try {
+            const user = JSON.parse(userProfile);
+            return new Promise(async resolve => {
+                await this.$api.sendMessage(user, messages);
+                resolve();
             });
-        });
+        } catch (err) {
+            return Promise.reject(err);
+        }
     }
 
     private addBasicListeners() {
