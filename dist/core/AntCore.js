@@ -329,10 +329,11 @@ var AntCore = (function (_super) {
     AntCore.prototype.sendMessage = function (id, messages) {
         var _this = this;
         try {
+            var user_1 = { id: id, apiVersion: 3 };
             return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4, this.$api.sendMessage(id, messages)];
+                        case 0: return [4, this.$api.sendMessage(user_1, messages)];
                         case 1:
                             _a.sent();
                             resolve();

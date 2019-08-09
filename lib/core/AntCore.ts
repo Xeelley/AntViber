@@ -284,8 +284,9 @@ export class AntCore extends EventEmitter {
     // FOR UNVALID ID 
     public sendMessage(id: string, messages: AntTypes.MessageType[]): Promise<void> {
         try {
+            const user = { id, apiVersion: 3 };
             return new Promise(async resolve => {
-                await this.$api.sendMessage(id, messages);
+                await this.$api.sendMessage(user, messages);
                 resolve();
             });
         } catch (err) {
