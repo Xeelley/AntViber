@@ -55,14 +55,12 @@ About:
 
 ## Basic usage ##
 
-Ant:Viber require to provide 2 basic status managment async methods: for getting status to user by viber `userProfile`, and for setting it.  
+Ant:Viber require to provide 2 basic status managment async methods: for getting status to user by viber `id`, and for setting it.  
 Feel free to chose storing way (architecture, database etc.). We require next interfaces only:
 ```ts
-getStatus(userProfile: String): Promise<String>;
-setStatus(userProfile: String, status: String): Promise<any>;
+getStatus(id: string): Promise<String>;
+setStatus(id: string, status: String): Promise<any>;
 ``` 
-
-**Notice**: userProfile may be stringified object using `JSON.stringify`.
 
 Just put in on Ant:Viber initialization with viber bot access token, bot name and avatar link:
 ```js
@@ -73,8 +71,8 @@ const bot_name   = 'my_bot';
 const bot_avatar = 'https://www.domain.com/avatar.jpg'; // Image direct link
 
 const Ant = new AntViber(bot_token, bot_name, bot_avatar, { 
-    getStatus: (userProfile) => { ... }, 
-    setStatus: (userProfile, status) => { ... },
+    getStatus: (id) => { ... }, 
+    setStatus: (id, status) => { ... },
 });
 ```
 
@@ -104,8 +102,8 @@ When new user connect to your bot (create subscription), bot will send start but
 
 Let's add handler for `/start` command:
 ```ts
-Ant.command('/start', async userProfile => {
-    await Ant.sendMessage(userProfile, [ Ant.Types.TextMessage('Hi!') ]);
+Ant.command('/start', async id => {
+    await Ant.sendMessage(id, [ Ant.Types.TextMessage('Hi!') ]);
 }) 
 ```
 
@@ -120,7 +118,7 @@ Your bot ready to start. Run script and make sure it works:
 
 Ant:Viber use official library so you can use `Ant.sendMessage` method for sending message to user:
 ```ts
-Ant.sendMessage(userProfile: Viber.userProfile, messages: Viber.message[])
+Ant.sendMessage(id: string, messages: Viber.message[])
 ```
 
 
@@ -136,19 +134,19 @@ Also Ant:Viber has `Error` generalization:
 ```js
 Ant.on('Error', err => { ... })
 ```
-`Error` will fire on any error. If error caused during user's scenario, error will have `userProfile` extra field.
+`Error` will fire on any error. If error caused during user's scenario, error will have `user_id` extra field.
 
 
 ### Statuses
 
 Set status for user:
 ```js
-await Ant.status(userProfile, 'my_status');
+await Ant.status(id, 'my_status');
 ```
 
 And add listener for this status: 
 ```js
-Ant.add('sticker', 'my_status', (userProfile, stickerId) => { ... }) 
+Ant.add('sticker', 'my_status', (id, stickerId) => { ... }) 
 ```
 First argument is user interaction type, second - our status, third - callback.  
 Callback will invoke every time when user with this status send sticker to bot.  
@@ -159,7 +157,7 @@ Full list of available types and callbacks you can check [here](docs/event-types
 
 Add command handlers using `Ant.command`:
 ```js
-Ant.command(command, (userProfile, params, message) => { ... })
+Ant.command(command, (id, params, user, message) => { ... })
 ```
 Command may contain `/` if needed (example: `/start`).
 Callback will invoke every time when user send this command to chat (either as text message or from rich message payload). Status will be ignored (works with any user's status).  
@@ -180,13 +178,13 @@ Notice: all param values are strings. You need to parse params by youself if you
 You can use multi-leveled statuses using level separator (`:` by default). It can be changed using `maskSeparator` field in initial config.   
 For example: 
 ```js
-await Ant.status(userProfile, 'buy:fruit:apple')
+await Ant.status(id, 'buy:fruit:apple')
 ```
 Provided status has 3 levels: action (`buy`), category (`fruit`), item (`apple`) and can be used during user interaction  with shopping cart.  
 You not need to set listeners using `Ant.add` for each item on third level. You can use mask (`*`):
 ```js
 // Mask value (item, in our case) will be provided as third callback parameter.
-Ant.add('message', 'buy:fruit:*', (userProfile, text, item) => {
+Ant.add('message', 'buy:fruit:*', (id, text, item) => {
     console.log(item) // apple
 })
 ```
@@ -199,7 +197,7 @@ See `Ant.Types`
 Ant:Viber simplifies api methods and types usage with builders.  
 Let's check examples:
 ```js
-await Ant.sendMessage(userProfile, [
+await Ant.sendMessage(id, [
     Ant.Types.TextMessage('Am I cool?'),
     Ant.Types.RichMedia([
         Ant.Types.RichKeyboardButton('Yes, sure!', 'coolmenu:yes'),
@@ -207,7 +205,7 @@ await Ant.sendMessage(userProfile, [
     ], 2)
 ])
 
-await Ant.sendMessage(userProfile, [
+await Ant.sendMessage(id, [
     new Ant.Types.Location(41.2362873, -87.6504762),
     new Ant.Types.Url('https://www.google.com'),
 ])
@@ -225,7 +223,7 @@ In second example we use types which don't need extra options.
 Using [builders](#Builders) you can define `rich_payload` type and data directly (second and third parameter in `Ant.Types.RichKeyboardButton`).  
 Example:
 ```js
-await Ant.sendMessage(userProfile, [
+await Ant.sendMessage(id, [
     Ant.Types.TextMessage('Click button below for getting colorful gift'),
     Ant.Types.RichMedia([
         Ant.Types.RichKeyboardButton('Click!', 'gift', 'red'),
@@ -235,7 +233,7 @@ await Ant.sendMessage(userProfile, [
 It will send test message with text and rich media below with one button that have `gift` type and data.  
 How to handle it? Use known `Ant.add` handler!
 ```js
-Ant.add('rich_payload', 'gift', async (userProfile, payload) => {
+Ant.add('rich_payload', 'gift', async (id, payload) => {
     console.log(payload) // "red"
 })
 ```

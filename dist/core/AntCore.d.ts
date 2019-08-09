@@ -31,7 +31,7 @@ export declare class AntCore extends EventEmitter {
     private _Location;
     private _Sticker;
     private _File;
-    sendMessage(userProfile: string, messages: AntTypes.MessageType[]): Promise<void>;
+    sendMessage(id: string, messages: AntTypes.MessageType[]): Promise<void>;
     private addBasicListeners;
     private checkStatus;
     private onError;

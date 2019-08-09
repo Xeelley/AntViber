@@ -22,9 +22,9 @@ export interface Commands {
     [key: string]: CommandCallback;
 }
 export interface CommandCallback {
-    (user: string, params: {
+    (id: string, params: {
         [index: string]: string;
-    }, message: ViberMessage): void;
+    }, user: ViberUserProfile, message: ViberMessage): void;
 }
 export declare type AntViberEvent = 'rich_payload' | 'message' | 'error' | 'message_sent' | 'subscribed' | 'picture' | 'file' | 'contact' | 'sticker' | 'location' | 'unsubscribed' | 'Error';
 export interface ViberLocation {
@@ -63,11 +63,11 @@ export interface ViberResponse {
     userProfile: ViberUserProfile;
 }
 export interface ViberUserProfile {
-    id: String;
-    name: String;
-    avatar?: String;
-    language?: String;
-    country?: String;
+    id: string;
+    name: string;
+    avatar?: string;
+    language?: string;
+    country?: string;
 }
 export interface Message {
     text?: string;
