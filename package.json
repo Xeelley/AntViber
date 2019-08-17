@@ -1,6 +1,6 @@
 {
   "name": "ant-viber",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "AntViber: small but poweful framework for telegram bots.",
   "main": "dist/index.js",
   "scripts": {

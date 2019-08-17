@@ -168,7 +168,7 @@ var AntCore = (function (_super) {
                 var command = payload.payloadData.slice(0, payload.payloadData.indexOf(_this.config.richPayloadDataSeparator));
                 command = command.indexOf('?') !== -1 ? command.slice(0, command.indexOf('?')) : command;
                 if (Object.keys(_this.commands).includes(command)) {
-                    _this.commands[command](user.id, CommandParser_1.CommandParser.parse(text), user, message);
+                    _this.commands[command](user, CommandParser_1.CommandParser.parse(text), message);
                     return;
                 }
                 else {
@@ -179,7 +179,7 @@ var AntCore = (function (_super) {
                 var command = text.indexOf('?') !== -1 ?
                     text.slice(0, text.indexOf('?')) : text;
                 if (Object.keys(_this.commands).includes(command)) {
-                    _this.commands[command](user.id, CommandParser_1.CommandParser.parse(text), user, message);
+                    _this.commands[command](user, CommandParser_1.CommandParser.parse(text), message);
                     return;
                 }
                 else {
@@ -326,14 +326,13 @@ var AntCore = (function (_super) {
     AntCore.prototype._File = function (url, size, filename) {
         return new Viber.Message.File(url, size, filename);
     };
-    AntCore.prototype.sendMessage = function (id, messages) {
+    AntCore.prototype.sendMessage = function (user, messages) {
         var _this = this;
         try {
-            var user_1 = { id: id, apiVersion: 3 };
             return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4, this.$api.sendMessage(user_1, messages)];
+                        case 0: return [4, this.$api.sendMessage(user, messages)];
                         case 1:
                             _a.sent();
                             resolve();
@@ -351,76 +350,76 @@ var AntCore = (function (_super) {
         ['subscribed', 'unsubscribed'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type);
             });
         }, this);
         ['message', 'message_sent'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
-                _this.checkStatus(user, type, message.text, message.userProfile);
+                var user = message.userProfile;
+                _this.checkStatus(user, type, message.text);
             });
         }, this);
         ['rich_payload'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type, message.payloadData);
             });
         }, this);
         ['picture'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type, message.picture);
             });
         }, this);
         ['sticker'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type, message.stickerId);
             });
         }, this);
         ['file'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type, message.file);
             });
         }, this);
         ['location'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type, message.location);
             });
         }, this);
         ['contact'].forEach(function (type) {
             _this.on(type, function (messages) {
                 var message = messages[0];
-                var user = message.userProfile.id;
+                var user = message.userProfile;
                 _this.checkStatus(user, type, message.contact);
             });
         }, this);
     };
-    AntCore.prototype.checkStatus = function (id, type, data, extra) {
+    AntCore.prototype.checkStatus = function (user, type, data, extra) {
         var _this = this;
-        this.config.getStatus(id)
+        this.config.getStatus(user.id)
             .then(function (status) {
             if (['rich_payload'].includes(type)) {
                 var richStatus = data.slice(0, data.indexOf(_this.config.richPayloadDataSeparator));
                 var payload = data.slice(data.indexOf(_this.config.richPayloadDataSeparator)
                     + _this.config.richPayloadDataSeparator.length);
                 if (Object.keys(_this.botListeners[type]).includes(richStatus)) {
-                    return _this.botListeners[type][richStatus](id, payload, extra);
+                    return _this.botListeners[type][richStatus](user, payload, extra);
                 }
                 else {
                     for (var i in Object.keys(_this.botListeners[type])) {
                         var listener = Object.keys(_this.botListeners[type])[i];
                         if (_this.isMask(listener) && _this.isMatch(richStatus, listener)) {
-                            return _this.botListeners[type][listener](id, payload, _this.isMatch(richStatus, listener));
+                            return _this.botListeners[type][listener](user, payload, _this.isMatch(richStatus, listener));
                         }
                     }
                 }
@@ -430,19 +429,19 @@ var AntCore = (function (_super) {
                     return;
                 _this.botListeners[type] = _this.botListeners[type] || {};
                 if (Object.keys(_this.botListeners[type]).includes(status)) {
-                    return _this.botListeners[type][status](id, data, extra);
+                    return _this.botListeners[type][status](user, data, extra);
                 }
                 else {
                     for (var i in Object.keys(_this.botListeners[type])) {
                         var listener = Object.keys(_this.botListeners[type])[i];
                         if (_this.isMask(listener) && _this.isMatch(status, listener)) {
-                            return _this.botListeners[type][listener](id, data, _this.isMatch(status, listener));
+                            return _this.botListeners[type][listener](user, data, _this.isMatch(status, listener));
                         }
                     }
                 }
             }
         })
-            .catch(function (err) { return _this.onError(id, err); });
+            .catch(function (err) { return _this.onError(user.id, err); });
     };
     AntCore.prototype.onError = function (id, err) {
         this.emit('Error', Object.assign(err, { user_id: id }));

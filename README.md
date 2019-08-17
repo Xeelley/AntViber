@@ -10,7 +10,7 @@
 </p>
 <p align="center">
     <a href="https://developers.viber.com/docs/api/rest-bot-api/">
-        <img src="https://img.shields.io/badge/API%20Version-3-00aced.svg">
+        <img src="https://img.shields.io/badge/API%20Version-3+-00aced.svg">
     </a>
     <a href="https://www.npmjs.com/package/ant-viber">
         <img src="https://img.shields.io/node/v/ant-viber.svg">
@@ -102,8 +102,8 @@ When new user connect to your bot (create subscription), bot will send start but
 
 Let's add handler for `/start` command:
 ```ts
-Ant.command('/start', async id => {
-    await Ant.sendMessage(id, [ Ant.Types.TextMessage('Hi!') ]);
+Ant.command('/start', async user => {
+    await Ant.sendMessage(user, [ Ant.Types.TextMessage('Hi!') ]);
 }) 
 ```
 
@@ -118,8 +118,10 @@ Your bot ready to start. Run script and make sure it works:
 
 Ant:Viber use official library so you can use `Ant.sendMessage` method for sending message to user:
 ```ts
-Ant.sendMessage(id: string, messages: Viber.message[])
+Ant.sendMessage(user: userProfile, messages: Viber.message[])
 ```
+
+`userProfile` is viber user object. Each listener returns `userProfile`.
 
 
 ### Events
@@ -143,21 +145,23 @@ Set status for user:
 ```js
 await Ant.status(id, 'my_status');
 ```
+**Notice:** `id` is `user.id` so you can easily get id from `userProfile`. 
 
 And add listener for this status: 
 ```js
-Ant.add('sticker', 'my_status', (id, stickerId) => { ... }) 
+Ant.add('sticker', 'my_status', (user, stickerId) => { ... }) 
 ```
 First argument is user interaction type, second - our status, third - callback.  
 Callback will invoke every time when user with this status send sticker to bot.  
-Full list of available types and callbacks you can check [here](docs/event-types.md).
+Full list of available types and callbacks you can check [here](docs/event-types.md).  
+`user` is `userProfile` (see [Viber API](#Viber-API)).
 
 
 ### Commands
 
 Add command handlers using `Ant.command`:
 ```js
-Ant.command(command, (id, params, user, message) => { ... })
+Ant.command(command, (user, params, user, message) => { ... })
 ```
 Command may contain `/` if needed (example: `/start`).
 Callback will invoke every time when user send this command to chat (either as text message or from rich message payload). Status will be ignored (works with any user's status).  
@@ -184,7 +188,7 @@ Provided status has 3 levels: action (`buy`), category (`fruit`), item (`apple`)
 You not need to set listeners using `Ant.add` for each item on third level. You can use mask (`*`):
 ```js
 // Mask value (item, in our case) will be provided as third callback parameter.
-Ant.add('message', 'buy:fruit:*', (id, text, item) => {
+Ant.add('message', 'buy:fruit:*', (user, text, item) => {
     console.log(item) // apple
 })
 ```
@@ -197,7 +201,7 @@ See `Ant.Types`
 Ant:Viber simplifies api methods and types usage with builders.  
 Let's check examples:
 ```js
-await Ant.sendMessage(id, [
+await Ant.sendMessage(user, [
     Ant.Types.TextMessage('Am I cool?'),
     Ant.Types.RichMedia([
         Ant.Types.RichKeyboardButton('Yes, sure!', 'coolmenu:yes'),
@@ -205,7 +209,7 @@ await Ant.sendMessage(id, [
     ], 2)
 ])
 
-await Ant.sendMessage(id, [
+await Ant.sendMessage(user, [
     new Ant.Types.Location(41.2362873, -87.6504762),
     new Ant.Types.Url('https://www.google.com'),
 ])
@@ -223,7 +227,7 @@ In second example we use types which don't need extra options.
 Using [builders](#Builders) you can define `rich_payload` type and data directly (second and third parameter in `Ant.Types.RichKeyboardButton`).  
 Example:
 ```js
-await Ant.sendMessage(id, [
+await Ant.sendMessage(user, [
     Ant.Types.TextMessage('Click button below for getting colorful gift'),
     Ant.Types.RichMedia([
         Ant.Types.RichKeyboardButton('Click!', 'gift', 'red'),
@@ -233,7 +237,7 @@ await Ant.sendMessage(id, [
 It will send test message with text and rich media below with one button that have `gift` type and data.  
 How to handle it? Use known `Ant.add` handler!
 ```js
-Ant.add('rich_payload', 'gift', async (id, payload) => {
+Ant.add('rich_payload', 'gift', async (user, payload) => {
     console.log(payload) // "red"
 })
 ```

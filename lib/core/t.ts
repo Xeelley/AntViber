@@ -24,7 +24,7 @@ export interface Commands {
 }
 
 export interface CommandCallback {
-    (id: string, params: { [index: string]: string }, user: ViberUserProfile, message: ViberMessage): void;
+    (user: ViberUserProfile, params: { [index: string]: string }, message: ViberMessage): void;
 }
 
 export type AntViberEvent = 'rich_payload' |
@@ -82,11 +82,12 @@ export interface ViberResponse {
 }
 
 export interface ViberUserProfile {
-    id:        string;
-    name:      string;
-    avatar?:   string;
-    language?: string;
-    country?:  string;
+    id:         string;
+    name:       string;
+    avatar?:    string;
+    language?:  string;
+    country?:   string;
+    apiVersion: string;
 }
 
 export interface Message {

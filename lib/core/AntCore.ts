@@ -54,8 +54,8 @@ export class AntCore extends EventEmitter {
         this.commands[command] = method;
     }
 
-    public status(user: string, status: string): Promise<any> {
-        return this.config.setStatus(user, status);
+    public status(id: string, status: string): Promise<any> {
+        return this.config.setStatus(id, status);
     }
 
     public on(event: T.AntViberEvent, listener: (...args: any[]) => void): any {
@@ -132,7 +132,7 @@ export class AntCore extends EventEmitter {
                 command = command.indexOf('?') !== -1 ? command.slice(0, command.indexOf('?')) : command;
 
                 if (Object.keys(this.commands).includes(command)) {
-                    this.commands[command](user.id, CommandParser.parse(text), user, message);
+                    this.commands[command](user, CommandParser.parse(text), message);
                     return;
                 } else {  
                     this.emit('rich_payload', payload);
@@ -142,7 +142,7 @@ export class AntCore extends EventEmitter {
                 text.slice(0, text.indexOf('?')) : text;
     
                 if (Object.keys(this.commands).includes(command)) {
-                    this.commands[command](user.id, CommandParser.parse(text), user, message);
+                    this.commands[command](user, CommandParser.parse(text), message);
                     return;
                 } else {
                     const data: T.Message = {
@@ -281,10 +281,8 @@ export class AntCore extends EventEmitter {
         return new Viber.Message.File(url, size, filename);
     }
 
-    // FOR UNVALID ID 
-    public sendMessage(id: string, messages: AntTypes.MessageType[]): Promise<void> {
+    public sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<void> {
         try {
-            const user = { id, apiVersion: 3 };
             return new Promise(async resolve => {
                 await this.$api.sendMessage(user, messages);
                 resolve();
@@ -298,63 +296,63 @@ export class AntCore extends EventEmitter {
         [ 'subscribed', 'unsubscribed' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type);
             })
         }, this);
         [ 'message', 'message_sent' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
-                this.checkStatus(user, type, message.text, message.userProfile);
+                const user = message.userProfile;
+                this.checkStatus(user, type, message.text);
             })
         }, this);
         [ 'rich_payload' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type, message.payloadData);
             })
         }, this);
         [ 'picture' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type, message.picture);
             })
         }, this);
         [ 'sticker' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type, message.stickerId);
             })
         }, this);
         [ 'file' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type, message.file);
             })
         }, this);
         [ 'location' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type, message.location);
             })
         }, this);
         [ 'contact' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
                 const message = messages[0];
-                const user = message.userProfile.id;
+                const user = message.userProfile;
                 this.checkStatus(user, type, message.contact);
             })
         }, this);
     }
 
-    private checkStatus(id: string, type: T.AntViberEvent, data?: any, extra?: any) {
-        this.config.getStatus(id)
+    private checkStatus(user: T.ViberUserProfile, type: T.AntViberEvent, data?: any, extra?: any) {
+        this.config.getStatus(user.id)
         .then(status => {
             if ([ 'rich_payload' ].includes(type)) {
                 const richStatus = data.slice(0, data.indexOf(this.config.richPayloadDataSeparator));
@@ -362,12 +360,12 @@ export class AntCore extends EventEmitter {
                                  + this.config.richPayloadDataSeparator.length);
                 
                 if (Object.keys(this.botListeners[type]).includes(richStatus)) {
-                    return this.botListeners[type][richStatus](id, payload, extra);
+                    return this.botListeners[type][richStatus](user, payload, extra);
                 } else {
                     for (let i in Object.keys(this.botListeners[type])) {
                         const listener = Object.keys(this.botListeners[type])[i];
                         if (this.isMask(listener) && this.isMatch(richStatus, listener)) {
-                            return this.botListeners[type][listener](id, payload, this.isMatch(richStatus, listener));
+                            return this.botListeners[type][listener](user, payload, this.isMatch(richStatus, listener));
                         }
                     }
                 }
@@ -376,18 +374,18 @@ export class AntCore extends EventEmitter {
                 this.botListeners[type] = this.botListeners[type] || {}; 
 
                 if (Object.keys(this.botListeners[type]).includes(status)) {
-                    return this.botListeners[type][status](id, data, extra);
+                    return this.botListeners[type][status](user, data, extra);
                 } else {
                     for (let i in Object.keys(this.botListeners[type])) {
                         const listener = Object.keys(this.botListeners[type])[i];
                         if (this.isMask(listener) && this.isMatch(status, listener)) {
-                            return this.botListeners[type][listener](id, data, this.isMatch(status, listener));
+                            return this.botListeners[type][listener](user, data, this.isMatch(status, listener));
                         }
                     }
                 }
             }
         })
-        .catch((err: Error) => this.onError(id, err));
+        .catch((err: Error) => this.onError(user.id, err));
     }
 
     private onError(id: string, err: Error) {
