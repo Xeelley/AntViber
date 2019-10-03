@@ -9,10 +9,10 @@ export interface AntViberConfig {
 }
 
 export interface ViberKeyboardConfig {
-    backgroundColor: string;
-    frameColor: string;
-    buttonColor: string;
-    BorderWidth: number;
+    backgroundColor?: string;
+    frameColor?: string;
+    buttonColor?: string;
+    BorderWidth?: number;
 }
 
 export interface Listeners {

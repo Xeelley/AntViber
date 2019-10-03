@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var defaultConfig = {
-    getStatus: function (user) { return Promise.resolve(''); },
-    setStatus: function (user, status) { return Promise.resolve(); },
+const defaultConfig = {
+    getStatus: (user) => Promise.resolve(''),
+    setStatus: (user, status) => Promise.resolve(),
     maskSeparator: ':',
     richPayloadPrefix: '[VCD]',
     startButtonText: 'Start!',
@@ -15,7 +15,7 @@ var defaultConfig = {
     }
 };
 function Config(config) {
-    var result = defaultConfig;
+    const result = defaultConfig;
     result.getStatus = config.getStatus;
     result.setStatus = config.setStatus;
     if (config.maskSeparator)
@@ -26,7 +26,7 @@ function Config(config) {
         result.startButtonText = config.startButtonText;
     if (config.richPayloadDataSeparator)
         result.richPayloadDataSeparator = config.richPayloadDataSeparator;
-    var $k = config.keyboardSettings;
+    const $k = config.keyboardSettings;
     if ($k) {
         if ($k.backgroundColor)
             result.keyboardSettings.backgroundColor = $k.backgroundColor;
