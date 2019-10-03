@@ -86,7 +86,7 @@ export class AntCore extends EventEmitter {
                         caption: message.text,
                     },
                     userProfile: user,
-                }
+                }   
                 this.emit('picture', data);
             } else if (message.url && message.filename && message.sizeInBytes) {
                 const data: T.Message = {
@@ -156,7 +156,8 @@ export class AntCore extends EventEmitter {
         this.$api.onConversationStarted((userProfile: T.ViberUserProfile,
         isSubscribed: boolean, context: any, onFinish: Function) => {
             const keyboard = this.Types.RichMedia([
-                this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start')
+                this.Types.RichKeyboardButton(this.config.startButtonText, '/start', 
+                '/start' + (context ? '?context=' + context : ''))
             ]);
             onFinish(keyboard);
         })
@@ -359,6 +360,8 @@ export class AntCore extends EventEmitter {
                 const payload    = data.slice(data.indexOf(this.config.richPayloadDataSeparator) 
                                  + this.config.richPayloadDataSeparator.length);
                 
+                // start
+
                 if (Object.keys(this.botListeners[type]).includes(richStatus)) {
                     return this.botListeners[type][richStatus](user, payload, extra);
                 } else {

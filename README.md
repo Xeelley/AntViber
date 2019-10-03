@@ -32,6 +32,7 @@ About:
 - [Basic usage](#Basic-usage) 
 - [Ant anatomy](#Ant-anatomy) 
 - [Rich media, payload data handling](#rich-media-payload-data-handling)
+- [Deep linking](#deep-linking)
 - [Config](#Config)
 - [Examples](#Examples)
 
@@ -221,6 +222,23 @@ In first example we use builders instead of define `options` object. This code w
 In second example we use types which don't need extra options.  
   
 **Notice:** types without extra options can be used either as functions or as classes (with `new`). Types with extra options (`RichMedia`, `Keyboard`, `ReplyKeyboardButton`, `RichKeyboardButton`, `UrlKeyboardButton`) can't be used as classes for context lossing preventing.
+
+
+## Deep linking ##
+Viber supports [deep linking](https://developers.viber.com/docs/tools/deep-links/) so you can create link like:
+```
+viber://pa?chatURI=<URI>&context=<Your Context>
+```
+which start user scenario with context value. You can handle context easily:
+```js
+// Via viber://pa?chatURI=yourbot&context=value
+Ant.command('/start', async (user, params) => {
+    console.log(params); // { context: 'value' }
+    console.log(params.context) // 'value'
+})
+```
+`Ant.command` listener provide params object as second parameter. It will be empty when user has been connected to bot 
+without deep link.
 
 
 ## Rich media, payload data handling ##

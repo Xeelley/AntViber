@@ -146,7 +146,7 @@ class AntCore extends events_1.EventEmitter {
         });
         this.$api.onConversationStarted((userProfile, isSubscribed, context, onFinish) => {
             const keyboard = this.Types.RichMedia([
-                this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start')
+                this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start' + (context ? '?context=' + context : ''))
             ]);
             onFinish(keyboard);
         });
