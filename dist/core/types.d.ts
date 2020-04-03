@@ -1,4 +1,5 @@
 import * as Viber from 'viber-bot';
+import * as T from './t';
 export interface IKeyboard {
     Type: 'keyboard';
     Revision: 1;
@@ -60,7 +61,41 @@ export interface BotProfile {
     members: BotMember[];
     subscribers_count: number;
 }
+export interface BotUserOnlineStatus {
+    id: string;
+    online_status: number;
+    online_status_message: string;
+    last_online: number;
+}
+export interface BotOnlineStatus {
+    status: number;
+    status_message: string;
+    users: BotUserOnlineStatus[];
+}
+export interface BotUserDetails {
+    id: string;
+    name: string;
+    language: string;
+    country: string;
+    primary_device_os: string;
+    api_version: number;
+    viber_version: string;
+    mcc: number;
+    mnc: number;
+    device_type: string;
+}
+export declare type onFinishHandler = (responseMessage: MessageType, optionalTrackingData?: {
+    [key: string]: any;
+}) => any;
+export declare type onConversationStartedHandler = (userProfile: T.ViberUserProfile, isSubscribed: boolean, context: any, onFinish: onFinishHandler) => any;
+export declare type OnSubscribeHandler = (id: string) => any;
+export declare type OnUnsubscribeHandler = (id: string) => any;
 export interface ViberAPI {
     getBotProfile(): Promise<BotProfile>;
+    getUserDetails(user: T.ViberUserProfile): Promise<BotUserDetails>;
+    getOnlineStatus(ids: string[]): Promise<BotOnlineStatus>;
+    onConversationStarted(handler: onConversationStartedHandler): void;
+    onSubscribe(handler: OnSubscribeHandler): void;
+    onUnsubscribe(handler: OnUnsubscribeHandler): void;
 }
 export {};
