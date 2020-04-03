@@ -91,11 +91,13 @@ const app = express();
 const webhookUrl = '/webhook';
 
 app.use(webhookUrl, Ant.middleware());
-await Ant.setWebhook('https://www.domain.com' + webhookUrl);
-app.listen(...)
+app.listen(async () => {
+    await Ant.setWebhook('https://www.domain.com' + webhookUrl);
+})
 ```
 
-**Notice:** https support required for viber webhook. Self-signed SSL certificates not supported!
+**Notice:** https support required for viber webhook. Self-signed SSL certificates not supported!  
+**Also notice:** you need to start your server before webhook setting.
 
 Now you ready to use Ant:Viber.
 
@@ -175,7 +177,7 @@ For example:
 | `/cmd` | `{}` |
 | `/cmd?item=apple&amount=2` | `{ item: 'apple', amount: '2' }` |
 
-Notice: all param values are strings. You need to parse params by youself if you need to support other types in command params.  
+**Notice:** all param values are strings. You need to parse params by youself if you need to support other types in command params.  
 
 
 ### Masks 
