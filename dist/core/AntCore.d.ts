@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
+import * as Viber from 'viber-bot';
 import * as AntTypes from './types';
 import * as T from './t';
 export declare class AntCore extends EventEmitter {
-    private $api;
+    protected $api: Viber.Bot;
     Types: AntTypes.ITypes;
     private config;
     protected botListeners: T.Listeners;

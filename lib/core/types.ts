@@ -49,3 +49,42 @@ Viber.Message.Location |
 Viber.Message.Sticker |
 Viber.Message.File;
 
+
+/**
+ * @description
+ * Viber API Types below
+ */
+
+export interface BotLocation {
+    lat: number;
+    lon: number;
+}
+
+export interface BotMember {
+    id: string;
+    name: string;
+    role: string;
+}
+
+export interface BotProfile {
+    status: number;
+    status_message: string;
+    id: string;
+    chat_hostname: string;
+    name: string;
+    uri: string;
+    icon?: string;
+    background?: string;
+    category: string;
+    subcategory: string;
+    location?: BotLocation;
+    country?: string;
+    webhook?: string;
+    event_types: string[];
+    members: BotMember[];
+    subscribers_count: number;
+}
+
+export interface ViberAPI {
+    getBotProfile(): Promise<BotProfile>;
+}

@@ -1,8 +1,8 @@
 import * as T from './core/t';
-import { AntCore } from './core/AntCore';
+import { AntAPI } from './core/AntAPI';
 
 
-export class AntViber extends AntCore {
+export class AntViber extends AntAPI {
 
     constructor(authToken: string, name: string, avatar: string, config: T.AntViberConfig) {
         super(authToken, name, avatar, config);

@@ -1,6 +1,6 @@
 import * as T from './core/t';
-import { AntCore } from './core/AntCore';
-export declare class AntViber extends AntCore {
+import { AntAPI } from './core/AntAPI';
+export declare class AntViber extends AntAPI {
     constructor(authToken: string, name: string, avatar: string, config: T.AntViberConfig);
     add(type: 'message', status: string, listener: (user: T.ViberUserProfile, text: string) => any): void;
     add(type: 'message_sent', status: string, listener: (user: T.ViberUserProfile, text: string) => any): void;

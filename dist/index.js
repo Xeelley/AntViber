@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const AntCore_1 = require("./core/AntCore");
-class AntViber extends AntCore_1.AntCore {
+const AntAPI_1 = require("./core/AntAPI");
+class AntViber extends AntAPI_1.AntAPI {
     constructor(authToken, name, avatar, config) {
         super(authToken, name, avatar, config);
     }

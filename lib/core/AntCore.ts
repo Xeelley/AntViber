@@ -6,12 +6,11 @@ import * as T from './t';
 
 import { CommandParser } from '../utils/CommandParser';
 import { Config }        from '../utils/ConfigBulder';
-import { rejects } from 'assert';
 
 
 export class AntCore extends EventEmitter {
 
-    private $api: Viber.Bot;
+    protected $api: Viber.Bot;
     public Types: AntTypes.ITypes;
 
     private config: T.AntViberConfig;
@@ -353,6 +352,7 @@ export class AntCore extends EventEmitter {
     }
 
     private checkStatus(user: T.ViberUserProfile, type: T.AntViberEvent, data?: any, extra?: any) {
+        if (!user || !user.id) return;
         this.config.getStatus(user.id)
         .then(status => {
             if ([ 'rich_payload' ].includes(type)) {

@@ -338,6 +338,8 @@ class AntCore extends events_1.EventEmitter {
         }, this);
     }
     checkStatus(user, type, data, extra) {
+        if (!user || !user.id)
+            return;
         this.config.getStatus(user.id)
             .then(status => {
             if (['rich_payload'].includes(type)) {
