@@ -272,18 +272,19 @@ So payload for expample will be equal to `'gift$:red'`.
 ## Config ##
 Ant:Viber init config contain next fields:
 
-| field | type | description |
-|-------|------|-------------|
-| `setStatus` | | See [basic usage](#Basic-usage) 
-| `getStatus` | | See [basic usage](#Basic-usage) 
-| `maskSeparator` | `string` | See [masks](#Masks)
-| `richPayloadPrefix` | `string` | Prefix for marking payload source: rich media if message with prefix, either text or reply message otherwise. Using if internal Ant:Viber processes only.
-| `startButtonText` | `string` | Text on dialog start button (when new user subcribed), see [basic usage](#Basic-usage) 
-| `richPayloadDataSeparator` | `string` | See [Rich media, payload data handling](#rich-media-payload-data-handling)
-| `keyboardSettings.backgroundColor` | `string` | RGA or HEX color of button panels (both reply and rich media) background
-| `keyboardSettings.buttonColor` | `string` | RGA or HEX color of button (background color)
-| `keyboardSettings.frameColor` | `string` | **Deprecated (v.<3.0.0)** RGA or HEX color of button frame 
-| `keyboardSettings.BorderWidth` | `number` | **Deprecated (v.<3.0.0)** Button border width in pixels (`2` by default, `0` for hide border)
+| field | type | default | description |
+|-------|------|---------|-------------|
+| `setStatus` | | | See [basic usage](#Basic-usage) 
+| `getStatus` | | | See [basic usage](#Basic-usage) 
+| `maskSeparator` | `string` | `:` | See [masks](#Masks)
+| `richPayloadPrefix` | `string` | `[VCD]` | Prefix for marking payload source: rich media if message with prefix, either text or reply message otherwise. Using if internal Ant:Viber processes only.
+| `startButtonText` | `string` | `Start!` | Text on dialog start button (when new user subcribed), see [basic usage](#Basic-usage). Work only when `autoStartMessage=true`.
+| `richPayloadDataSeparator` | `string` | `$:` | See [Rich media, payload data handling](#rich-media-payload-data-handling)
+| `autoStartMessage` | `boolean` | `true` | Default rich keyboard with start button will be send when user subscribed if `true` is passed.  
+| `keyboardSettings.backgroundColor` | `string` | `#FFFFFF` | RGA or HEX color of button panels (both reply and rich media) background
+| `keyboardSettings.buttonColor` | `string` | `#FFFFFF` | RGA or HEX color of button (background color)
+| `keyboardSettings.frameColor` | `string` | `#665CAC` | **Deprecated (v.<3.0.0)** RGA or HEX color of button frame 
+| `keyboardSettings.BorderWidth` | `number` | `0` | **Deprecated (v.<3.0.0)** Button border width in pixels.
 
 
 ## Examples ##

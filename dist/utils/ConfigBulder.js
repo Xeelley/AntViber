@@ -12,7 +12,8 @@ const defaultConfig = {
         frameColor: '#665CAC',
         buttonColor: '#FFFFFF',
         BorderWidth: 0,
-    }
+    },
+    autoStartMessage: true,
 };
 function Config(config) {
     const result = defaultConfig;
@@ -26,6 +27,8 @@ function Config(config) {
         result.startButtonText = config.startButtonText;
     if (config.richPayloadDataSeparator)
         result.richPayloadDataSeparator = config.richPayloadDataSeparator;
+    if (config.autoStartMessage !== undefined)
+        result.autoStartMessage = config.autoStartMessage;
     const $k = config.keyboardSettings;
     if ($k) {
         if ($k.backgroundColor)

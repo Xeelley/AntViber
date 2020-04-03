@@ -118,7 +118,11 @@ export type onFinishHandler = (responseMessage: MessageType, optionalTrackingDat
 export type onConversationStartedHandler = (userProfile: T.ViberUserProfile,
 isSubscribed: boolean, context: any, onFinish: onFinishHandler) => any;
 
-export type OnSubscribeHandler = (id: string) => any;
+export interface OnSubscribeResponse {
+    userProfile: T.ViberUserProfile;
+}
+
+export type OnSubscribeHandler = (response: OnSubscribeResponse) => any;
 
 export type OnUnsubscribeHandler = (id: string) => any;
 

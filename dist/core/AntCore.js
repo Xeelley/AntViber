@@ -144,12 +144,14 @@ class AntCore extends events_1.EventEmitter {
                 }
             }
         });
-        this.$api.onConversationStarted((userProfile, isSubscribed, context, onFinish) => {
-            const keyboard = this.Types.RichMedia([
-                this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start' + (context ? '?context=' + context : ''))
-            ]);
-            onFinish(keyboard);
-        });
+        if (this.config.autoStartMessage) {
+            this.$api.onConversationStarted((_, __, c, onFinish) => {
+                const keyboard = this.Types.RichMedia([
+                    this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start' + (c ? '?context=' + c : ''))
+                ]);
+                onFinish(keyboard);
+            });
+        }
         this.$api.on(Viber.Events.ERROR, (err) => {
             this.emit('error', err);
             this.emit('Error', err);

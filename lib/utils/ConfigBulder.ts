@@ -12,7 +12,8 @@ const defaultConfig: T.AntViberConfig = {
         frameColor: '#665CAC', 
         buttonColor: '#FFFFFF',
         BorderWidth: 0,
-    }
+    },
+    autoStartMessage: true,
 }
 
 export function Config(config: T.AntViberConfig) {
@@ -25,6 +26,8 @@ export function Config(config: T.AntViberConfig) {
     if (config.richPayloadPrefix)        result.richPayloadPrefix        = config.richPayloadPrefix;
     if (config.startButtonText)          result.startButtonText          = config.startButtonText;
     if (config.richPayloadDataSeparator) result.richPayloadDataSeparator = config.richPayloadDataSeparator;
+
+    if (config.autoStartMessage !== undefined) result.autoStartMessage = config.autoStartMessage;
 
     const $k = config.keyboardSettings;
     if ($k) {

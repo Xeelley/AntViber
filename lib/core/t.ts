@@ -6,6 +6,7 @@ export interface AntViberConfig {
     keyboardSettings?: ViberKeyboardConfig;
     startButtonText?: string;
     richPayloadDataSeparator?: string;
+    autoStartMessage?: boolean;
 }
 
 export interface ViberKeyboardConfig {
