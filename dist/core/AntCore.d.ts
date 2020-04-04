@@ -2,10 +2,12 @@ import { EventEmitter } from 'events';
 import * as Viber from 'viber-bot';
 import * as AntTypes from './types';
 import * as T from './t';
+import * as RestAPI from '../utils/RestAPI';
 export declare class AntCore extends EventEmitter {
     protected $api: Viber.Bot;
     Types: AntTypes.ITypes;
     private config;
+    private connectionConfig;
     protected botListeners: T.Listeners;
     protected commands: T.Commands;
     constructor(authToken: string, name: string, avatar: string, config: T.AntViberConfig);
@@ -31,7 +33,7 @@ export declare class AntCore extends EventEmitter {
     private _Location;
     private _Sticker;
     private _File;
-    sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<void>;
+    sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]>;
     private addBasicListeners;
     private checkStatus;
     private onError;

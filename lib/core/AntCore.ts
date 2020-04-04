@@ -6,6 +6,7 @@ import * as T from './t';
 
 import { CommandParser } from '../utils/CommandParser';
 import { Config }        from '../utils/ConfigBulder';
+import * as RestAPI      from '../utils/RestAPI';
 
 
 export class AntCore extends EventEmitter {
@@ -14,6 +15,7 @@ export class AntCore extends EventEmitter {
     public Types: AntTypes.ITypes;
 
     private config: T.AntViberConfig;
+    private connectionConfig: T.AntConnectionConfig;
 
     protected botListeners: T.Listeners = {};
     protected commands: T.Commands = {};
@@ -25,6 +27,8 @@ export class AntCore extends EventEmitter {
         if (!config.getStatus) throw new Error('Ant: config.getStatus not provided! This field is mandatory.');
         if (!config.setStatus) throw new Error('Ant: config.setStatus not provided! This field is mandatory.');
         this.config = Config(config);
+
+        this.connectionConfig = { token: authToken, name, avatar };
 
         this.$api = new Viber.Bot({ authToken, name, avatar });
 
@@ -284,15 +288,10 @@ export class AntCore extends EventEmitter {
         return new Viber.Message.File(url, size, filename);
     }
 
-    public sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<void> {
-        try {
-            return new Promise(async resolve => {
-                await this.$api.sendMessage(user, messages);
-                resolve();
-            });
-        } catch (err) {
-            return Promise.reject(err);
-        }
+    public sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]> {
+        return new Promise<RestAPI.APIResponse[]>((resolve, reject) => {
+            RestAPI.sendMessage(user, messages, this.connectionConfig).then(resolve).catch(reject)
+        })
     }
 
     private addBasicListeners() {

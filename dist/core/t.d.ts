@@ -8,6 +8,11 @@ export interface AntViberConfig {
     richPayloadDataSeparator?: string;
     autoStartMessage?: boolean;
 }
+export interface AntConnectionConfig {
+    token: string;
+    name: string;
+    avatar?: string;
+}
 export interface ViberKeyboardConfig {
     backgroundColor?: string;
     frameColor?: string;

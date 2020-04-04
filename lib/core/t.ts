@@ -9,6 +9,12 @@ export interface AntViberConfig {
     autoStartMessage?: boolean;
 }
 
+export interface AntConnectionConfig {
+    token:   string;
+    name:    string;
+    avatar?: string;
+}
+
 export interface ViberKeyboardConfig {
     backgroundColor?: string;
     frameColor?: string;

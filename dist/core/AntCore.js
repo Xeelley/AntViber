@@ -1,17 +1,10 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const Viber = require("viber-bot");
 const CommandParser_1 = require("../utils/CommandParser");
 const ConfigBulder_1 = require("../utils/ConfigBulder");
+const RestAPI = require("../utils/RestAPI");
 class AntCore extends events_1.EventEmitter {
     constructor(authToken, name, avatar, config) {
         super();
@@ -22,6 +15,7 @@ class AntCore extends events_1.EventEmitter {
         if (!config.setStatus)
             throw new Error('Ant: config.setStatus not provided! This field is mandatory.');
         this.config = ConfigBulder_1.Config(config);
+        this.connectionConfig = { token: authToken, name, avatar };
         this.$api = new Viber.Bot({ authToken, name, avatar });
         this.Types = {
             ReplyKeyboardButton: this._ReplyKeyboardButton.bind(this),
@@ -271,15 +265,9 @@ class AntCore extends events_1.EventEmitter {
         return new Viber.Message.File(url, size, filename);
     }
     sendMessage(user, messages) {
-        try {
-            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                yield this.$api.sendMessage(user, messages);
-                resolve();
-            }));
-        }
-        catch (err) {
-            return Promise.reject(err);
-        }
+        return new Promise((resolve, reject) => {
+            RestAPI.sendMessage(user, messages, this.connectionConfig).then(resolve).catch(reject);
+        });
     }
     addBasicListeners() {
         ['subscribed', 'unsubscribed'].forEach((type) => {
