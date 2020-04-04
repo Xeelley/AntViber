@@ -288,7 +288,7 @@ export class AntCore extends EventEmitter {
         return new Viber.Message.File(url, size, filename);
     }
 
-    public sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]> {
+    public sendMessage(user: T.ViberUserProfile | string, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]> {
         return new Promise<RestAPI.APIResponse[]>((resolve, reject) => {
             RestAPI.sendMessage(user, messages, this.connectionConfig).then(resolve).catch(reject)
         })

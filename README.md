@@ -119,12 +119,20 @@ Your bot ready to start. Run script and make sure it works:
 
 ### Viber API 
 
-Ant:Viber use official library so you can use `Ant.sendMessage` method for sending message to user:
+Ant:Viber use [official API](https://developers.viber.com/docs/api/nodejs-bot-api/) so you can use `Ant.sendMessage` method for sending message to user:
 ```ts
-Ant.sendMessage(user: userProfile, messages: Viber.message[])
+Ant.sendMessage(user: userProfile | string, messages: Viber.message[])
 ```
 
-`userProfile` is viber user object. Each listener returns `userProfile`.
+`userProfile` is viber user object. Each listener returns `userProfile`. You also can pass user `id` string (`userProfile.id`) instead of whole object.  
+
+`Ant.api` contains other methods from [official API](https://developers.viber.com/docs/api/nodejs-bot-api/):
+- `getBotProfile(): Promise<BotProfile>` - get bot info.
+- `getUserDetails(user: ViberUserProfile): Promise<BotUserDetails>` - get detail info for provided user.
+- `getOnlineStatus(ids: string[]): Promise<BotOnlineStatus>` - get connection status for multiple users by their ids.
+- `onConversationStarted(handler: OnConversationStartedHandler): void` - handler that called when user start conversation with bot (reconnections also counted).
+- `onSubscribe(handler: OnSubscribeHandler): void` - handler that called when user subscribed on bot messages (both on start and manually).
+- `onUnsubscribe(handler: OnUnsubscribeHandler): void` - handler that called when user unsubscribed on bot messages.
 
 
 ### Events

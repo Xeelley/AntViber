@@ -33,7 +33,7 @@ export declare class AntCore extends EventEmitter {
     private _Location;
     private _Sticker;
     private _File;
-    sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]>;
+    sendMessage(user: T.ViberUserProfile | string, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]>;
     private addBasicListeners;
     private checkStatus;
     private onError;

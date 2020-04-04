@@ -15,7 +15,7 @@ export interface APIResponse {
     chat_hostname: string;
 }
 
-export function sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[], 
+export function sendMessage(user: T.ViberUserProfile | string, messages: AntTypes.MessageType[], 
 config: T.AntConnectionConfig): Promise<APIResponse[]> {
     return new Promise(async (resolve, reject) => {
         try {
@@ -30,12 +30,12 @@ config: T.AntConnectionConfig): Promise<APIResponse[]> {
     })
 }
 
-function sendOne(user: T.ViberUserProfile, message: AntTypes.MessageType, 
+function sendOne(user: T.ViberUserProfile | string, message: AntTypes.MessageType, 
 config: T.AntConnectionConfig): Promise<APIResponse> {
     return new Promise(async (resolve, reject) => {
         try {
             const body: { [key: string]: any } = {
-                receiver: user.id,
+                receiver: null,
                 min_api_version: 2,
                 sender: {
                     name: config.name,
@@ -44,11 +44,21 @@ config: T.AntConnectionConfig): Promise<APIResponse> {
                 keyboard: null,
             }
 
+            switch(typeof user) {
+                case 'string': body.receiver = user; break;
+                case 'object': body.receiver = user.id; break;
+            }
+            if (!body.receiver) {
+                return reject(APIError('user is missing'))
+            }
+
             if (message.minApiVersion && message.minApiVersion > body.min_api_version) {
                 body.min_api_version = message.minApiVersion;
             }
 
-            if (!message || !message.constructor || !message.constructor.name) return reject(new Error('Invalid body'))
+            if (!message || !message.constructor || !message.constructor.name) {
+                return reject(APIError('Invalid body'))
+            }
 
             if (message.constructor.name === 'TextMessage') {
                 body.type = 'text';

@@ -6,4 +6,4 @@ export interface APIResponse {
     message_token: number;
     chat_hostname: string;
 }
-export declare function sendMessage(user: T.ViberUserProfile, messages: AntTypes.MessageType[], config: T.AntConnectionConfig): Promise<APIResponse[]>;
+export declare function sendMessage(user: T.ViberUserProfile | string, messages: AntTypes.MessageType[], config: T.AntConnectionConfig): Promise<APIResponse[]>;

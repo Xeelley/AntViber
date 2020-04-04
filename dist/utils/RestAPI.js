@@ -30,7 +30,7 @@ function sendOne(user, message, config) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         try {
             const body = {
-                receiver: user.id,
+                receiver: null,
                 min_api_version: 2,
                 sender: {
                     name: config.name,
@@ -38,11 +38,23 @@ function sendOne(user, message, config) {
                 },
                 keyboard: null,
             };
+            switch (typeof user) {
+                case 'string':
+                    body.receiver = user;
+                    break;
+                case 'object':
+                    body.receiver = user.id;
+                    break;
+            }
+            if (!body.receiver) {
+                return reject(APIError('user is missing'));
+            }
             if (message.minApiVersion && message.minApiVersion > body.min_api_version) {
                 body.min_api_version = message.minApiVersion;
             }
-            if (!message || !message.constructor || !message.constructor.name)
-                return reject(new Error('Invalid body'));
+            if (!message || !message.constructor || !message.constructor.name) {
+                return reject(APIError('Invalid body'));
+            }
             if (message.constructor.name === 'TextMessage') {
                 body.type = 'text';
                 body.text = message.text;
