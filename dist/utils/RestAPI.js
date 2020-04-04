@@ -31,7 +31,7 @@ function sendOne(user, message, config) {
         try {
             const body = {
                 receiver: user.id,
-                min_api_version: 1,
+                min_api_version: 2,
                 sender: {
                     name: config.name,
                     avatar: config.avatar,
@@ -41,7 +41,6 @@ function sendOne(user, message, config) {
             if (message.minApiVersion && message.minApiVersion > body.min_api_version) {
                 body.min_api_version = message.minApiVersion;
             }
-            console.log(message.constructor.name, message);
             if (!message || !message.constructor || !message.constructor.name)
                 return reject(new Error('Invalid body'));
             if (message.constructor.name === 'TextMessage') {
@@ -91,8 +90,29 @@ function sendOne(user, message, config) {
                 body.size = message.sizeInBytes;
                 body.file_name = message.filename;
             }
+            if (message.constructor.name === 'KeyboardMessage') {
+                if (!message.keyboard)
+                    return reject(APIError('keyboard is missing'));
+                body.keyboard = {
+                    Type: 'keyboard',
+                    DefaultHeight: true,
+                    Buttons: message.keyboard.Buttons,
+                };
+            }
+            if (message.constructor.name === 'RichMediaMessage') {
+                if (!message.richMedia)
+                    return reject(APIError('richMedia is missing'));
+                body.type = 'rich_media';
+                body.rich_media = {
+                    Type: 'rich_media',
+                    ButtonsGroupColumns: message.richMedia.ButtonsGroupColumns || 6,
+                    ButtonsGroupRows: message.richMedia.ButtonsGroupRows || 1,
+                    BgColor: message.richMedia.BgColor || '#FFFFFF',
+                    Revision: message.richMedia.Revision || 1,
+                    Buttons: message.richMedia.Buttons,
+                };
+            }
             const res = yield send(body, config.token);
-            console.log(res);
             return resolve(res);
         }
         catch (err) {
@@ -130,4 +150,11 @@ function send(data, token) {
         req.write(JSON.stringify(data));
         req.end();
     });
+}
+function APIError(message) {
+    return {
+        status: 3,
+        status_message: message,
+        chat_hostname: 'Ant',
+    };
 }

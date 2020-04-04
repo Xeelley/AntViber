@@ -36,7 +36,7 @@ config: T.AntConnectionConfig): Promise<APIResponse> {
         try {
             const body: { [key: string]: any } = {
                 receiver: user.id,
-                min_api_version: 1,
+                min_api_version: 2,
                 sender: {
                     name: config.name,
                     avatar: config.avatar,
@@ -49,19 +49,6 @@ config: T.AntConnectionConfig): Promise<APIResponse> {
             }
 
             if (!message || !message.constructor || !message.constructor.name) return reject(new Error('Invalid body'))
-
-            // | type     | Core | API | release |
-            // |----------|------|-----|---------|
-            // | text     | +    | +   | +       |
-            // | keyboard | +    | att |         |
-            // | rich     | +    | att |         |
-            // | picture  | +    | +   |         |
-            // | url      | +    | +   |         |
-            // | contact  | +    | +   |         |
-            // | video    | +    | +   |         |
-            // | location | +    | +   |         |
-            // | sticker  | +    | +   |         |
-            // | file     | +    | +   |         |
 
             if (message.constructor.name === 'TextMessage') {
                 body.type = 'text';
@@ -110,6 +97,26 @@ config: T.AntConnectionConfig): Promise<APIResponse> {
                 body.size = message.sizeInBytes;
                 body.file_name = message.filename;
             }
+            if (message.constructor.name === 'KeyboardMessage') {
+                if (!message.keyboard) return reject(APIError('keyboard is missing'))
+                body.keyboard = {
+                    Type: 'keyboard',
+                    DefaultHeight: true,
+                    Buttons: message.keyboard.Buttons,
+                }
+            }
+            if (message.constructor.name === 'RichMediaMessage') {
+                if (!message.richMedia) return reject(APIError('richMedia is missing'))
+                body.type = 'rich_media';
+                body.rich_media = {
+                    Type: 'rich_media',
+                    ButtonsGroupColumns: message.richMedia.ButtonsGroupColumns || 6,
+                    ButtonsGroupRows: message.richMedia.ButtonsGroupRows || 1,
+                    BgColor: message.richMedia.BgColor || '#FFFFFF',
+                    Revision: message.richMedia.Revision || 1,
+                    Buttons: message.richMedia.Buttons,
+                }
+            }
             
             const res = await send(body, config.token)
             return resolve(res)
@@ -149,4 +156,12 @@ function send(data: any, token: string): Promise<APIResponse> {
         req.write(JSON.stringify(data))
         req.end()
     })
+}
+
+function APIError(message: string): { [key: string]: string | number } {
+    return {
+        status: 3,
+        status_message: message,
+        chat_hostname: 'Ant',
+    }
 }
