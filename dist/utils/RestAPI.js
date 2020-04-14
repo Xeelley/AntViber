@@ -112,7 +112,7 @@ function sendOne(user, message, config) {
                 };
             }
             if (message.constructor.name === 'RichMediaMessage') {
-                if (!message.richMedia)
+                if (!message.richMedia || !message.richMedia.Buttons)
                     return reject(APIError('richMedia is missing'));
                 body.type = 'rich_media';
                 body.rich_media = {
@@ -121,7 +121,11 @@ function sendOne(user, message, config) {
                     ButtonsGroupRows: message.richMedia.ButtonsGroupRows || message.richMedia.Buttons.length,
                     BgColor: message.richMedia.BgColor || '#FFFFFF',
                     Revision: message.richMedia.Revision || 1,
-                    Buttons: message.richMedia.Buttons,
+                    Buttons: message.richMedia.Buttons.map(button => {
+                        button.TextVAlign = 'middle';
+                        button.TextHAlign = 'middle';
+                        return button;
+                    }),
                 };
             }
             const res = yield send(body, config.token);
