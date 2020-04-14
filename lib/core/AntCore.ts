@@ -260,7 +260,7 @@ export class AntCore extends EventEmitter {
     private _Keyboard(buttons: AntTypes.IButton[]): Viber.Message.Keyboard {
         return new Viber.Message.Keyboard(this._AnyKeyboard(buttons), null, null, null, 3);
     }
-    private _RichMedia(buttons: AntTypes.IButton[], rows: number = 1): Viber.Message.RichMedia {
+    private _RichMedia(buttons: AntTypes.IButton[], rows: number): Viber.Message.RichMedia {
         return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows), null, null, null, 3);
     }
     private _TextMessage(text: string): Viber.Message.Text {

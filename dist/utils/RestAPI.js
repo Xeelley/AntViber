@@ -107,7 +107,7 @@ function sendOne(user, message, config) {
                     return reject(APIError('keyboard is missing'));
                 body.keyboard = {
                     Type: 'keyboard',
-                    DefaultHeight: true,
+                    DefaultHeight: false,
                     Buttons: message.keyboard.Buttons,
                 };
             }
@@ -118,7 +118,7 @@ function sendOne(user, message, config) {
                 body.rich_media = {
                     Type: 'rich_media',
                     ButtonsGroupColumns: message.richMedia.ButtonsGroupColumns || 6,
-                    ButtonsGroupRows: message.richMedia.ButtonsGroupRows || 1,
+                    ButtonsGroupRows: message.richMedia.ButtonsGroupRows || message.richMedia.Buttons.length,
                     BgColor: message.richMedia.BgColor || '#FFFFFF',
                     Revision: message.richMedia.Revision || 1,
                     Buttons: message.richMedia.Buttons,
@@ -150,6 +150,8 @@ function send(data, token) {
             });
             res.on('end', () => {
                 try {
+                    if (!response)
+                        return reject(APIError('Viber REST API returns nothing. Check request body'));
                     const responseObj = JSON.parse(response);
                     return responseObj.status === 0 ? resolve(responseObj) : reject(responseObj);
                 }

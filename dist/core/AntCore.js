@@ -237,7 +237,7 @@ class AntCore extends events_1.EventEmitter {
     _Keyboard(buttons) {
         return new Viber.Message.Keyboard(this._AnyKeyboard(buttons), null, null, null, 3);
     }
-    _RichMedia(buttons, rows = 1) {
+    _RichMedia(buttons, rows) {
         return new Viber.Message.RichMedia(this._AnyKeyboard(buttons, rows), null, null, null, 3);
     }
     _TextMessage(text) {
