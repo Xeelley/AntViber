@@ -162,7 +162,7 @@ export class AntCore extends EventEmitter {
                 const keyboard = this.Types.RichMedia([
                     this.Types.RichKeyboardButton(this.config.startButtonText, '/start', 
                     '/start' + (c ? '?context=' + c : ''))
-                ]);
+                ], 1);
                 onFinish(keyboard);
             })
         }

@@ -139,10 +139,10 @@ class AntCore extends events_1.EventEmitter {
             }
         });
         if (this.config.autoStartMessage) {
-            this.$api.onConversationStarted((_, __, c, onFinish) => {
+            this.$api.onConversationStarted((user, __, c, onFinish) => {
                 const keyboard = this.Types.RichMedia([
                     this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start' + (c ? '?context=' + c : ''))
-                ]);
+                ], 1);
                 onFinish(keyboard);
             });
         }
