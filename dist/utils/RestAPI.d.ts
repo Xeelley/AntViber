@@ -1,5 +1,6 @@
 import * as T from '../core/t';
 import * as AntTypes from '../core/types';
+export declare function setConfig(_: T.AntViberConfig): void;
 export interface APIResponse {
     status: number;
     status_message: string;

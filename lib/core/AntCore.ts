@@ -27,6 +27,7 @@ export class AntCore extends EventEmitter {
         if (!config.getStatus) throw new Error('Ant: config.getStatus not provided! This field is mandatory.');
         if (!config.setStatus) throw new Error('Ant: config.setStatus not provided! This field is mandatory.');
         this.config = Config(config);
+        RestAPI.setConfig(this.config);
 
         this.connectionConfig = { token: authToken, name, avatar };
 

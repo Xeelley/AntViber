@@ -14,6 +14,11 @@ const defaultConfig = {
         BorderWidth: 0,
     },
     autoStartMessage: true,
+    retryRequest: {
+        enable: false,
+        retries: 0,
+        interval: 100,
+    },
 };
 function Config(config) {
     const result = defaultConfig;
@@ -33,12 +38,21 @@ function Config(config) {
     if ($k) {
         if ($k.backgroundColor)
             result.keyboardSettings.backgroundColor = $k.backgroundColor;
-        if ($k.backgroundColor)
+        if ($k.frameColor)
             result.keyboardSettings.frameColor = $k.frameColor;
-        if ($k.backgroundColor)
+        if ($k.buttonColor)
             result.keyboardSettings.buttonColor = $k.buttonColor;
-        if ($k.backgroundColor)
+        if ($k.BorderWidth)
             result.keyboardSettings.BorderWidth = $k.BorderWidth;
+    }
+    const $r = config.retryRequest;
+    if ($r) {
+        if ($r.enable)
+            result.retryRequest.enable = $r.enable;
+        if ($r.retries)
+            result.retryRequest.retries = $r.retries;
+        if ($r.interval)
+            result.retryRequest.interval = $r.interval;
     }
     return result;
 }

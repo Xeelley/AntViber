@@ -7,6 +7,7 @@ export interface AntViberConfig {
     startButtonText?: string;
     richPayloadDataSeparator?: string;
     autoStartMessage?: boolean;
+    retryRequest?: ViberRetryRequestsConfig;
 }
 export interface AntConnectionConfig {
     token: string;
@@ -18,6 +19,11 @@ export interface ViberKeyboardConfig {
     frameColor?: string;
     buttonColor?: string;
     BorderWidth?: number;
+}
+export interface ViberRetryRequestsConfig {
+    enable: boolean;
+    retries: number;
+    interval: number;
 }
 export interface Listeners {
     [key: string]: {

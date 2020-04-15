@@ -11,6 +11,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const https_1 = require("https");
 const VIBER_HOST = 'chatapi.viber.com';
 const VIBER_PATH = '/pa/send_message';
+let ANT_CONFIG;
+function setConfig(_) { ANT_CONFIG = _; }
+exports.setConfig = setConfig;
 function sendMessage(user, messages, config) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         try {
@@ -136,7 +139,7 @@ function sendOne(user, message, config) {
         }
     }));
 }
-function send(data, token) {
+function send(data, token, retries = 0) {
     return new Promise((resolve, reject) => {
         const req = https_1.request({
             hostname: VIBER_HOST,
@@ -154,8 +157,9 @@ function send(data, token) {
             });
             res.on('end', () => {
                 try {
-                    if (!response)
+                    if (!response) {
                         return reject(APIError('Viber REST API returns nothing. Check request body'));
+                    }
                     const responseObj = JSON.parse(response);
                     return responseObj.status === 0 ? resolve(responseObj) : reject(responseObj);
                 }
@@ -165,8 +169,22 @@ function send(data, token) {
             });
         });
         req.on('error', err => reject(err));
-        req.write(JSON.stringify(data));
-        req.end();
+        if (retries) {
+            setTimeout(() => {
+                req.write(JSON.stringify(data));
+                req.end();
+            }, 150);
+        }
+        else {
+            req.write(JSON.stringify(data));
+            req.end();
+        }
+    }).catch(err => {
+        return ANT_CONFIG.retryRequest.enable
+            && err.status !== 12
+            && retries < ANT_CONFIG.retryRequest.retries - 1
+            ? send(data, token, retries + 1)
+            : Promise.reject(err);
     });
 }
 function APIError(message) {

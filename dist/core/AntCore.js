@@ -15,6 +15,7 @@ class AntCore extends events_1.EventEmitter {
         if (!config.setStatus)
             throw new Error('Ant: config.setStatus not provided! This field is mandatory.');
         this.config = ConfigBulder_1.Config(config);
+        RestAPI.setConfig(this.config);
         this.connectionConfig = { token: authToken, name, avatar };
         this.$api = new Viber.Bot({ authToken, name, avatar });
         this.Types = {
@@ -139,7 +140,7 @@ class AntCore extends events_1.EventEmitter {
             }
         });
         if (this.config.autoStartMessage) {
-            this.$api.onConversationStarted((user, __, c, onFinish) => {
+            this.$api.onConversationStarted((_, __, c, onFinish) => {
                 const keyboard = this.Types.RichMedia([
                     this.Types.RichKeyboardButton(this.config.startButtonText, '/start', '/start' + (c ? '?context=' + c : ''))
                 ], 1);

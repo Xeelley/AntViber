@@ -7,6 +7,9 @@ import * as AntTypes from '../core/types';
 const VIBER_HOST = 'chatapi.viber.com';
 const VIBER_PATH = '/pa/send_message';
 
+let ANT_CONFIG: T.AntViberConfig;
+export function setConfig(_: T.AntViberConfig) { ANT_CONFIG = _ }
+
 
 export interface APIResponse {
     status: number;
@@ -141,7 +144,7 @@ config: T.AntConnectionConfig): Promise<APIResponse> {
     })
 }
 
-function send(data: any, token: string): Promise<APIResponse> {
+function send(data: any, token: string, retries: number = 0): Promise<APIResponse> {
     return new Promise<any>((resolve, reject) => {
         const req = request({
             hostname: VIBER_HOST,
@@ -159,7 +162,9 @@ function send(data: any, token: string): Promise<APIResponse> {
             })
             res.on('end', () => {
                 try {
-                    if (!response) return reject(APIError('Viber REST API returns nothing. Check request body'))
+                    if (!response) {
+                        return reject(APIError('Viber REST API returns nothing. Check request body'))
+                    }
                     const responseObj = JSON.parse(response);
                     return responseObj.status === 0 ? resolve(responseObj) : reject(responseObj)
                 } catch(err) {
@@ -168,10 +173,23 @@ function send(data: any, token: string): Promise<APIResponse> {
             })
         })
         req.on('error', err => reject(err))
-        req.write(JSON.stringify(data))
-        req.end()
+        if (retries) {
+            setTimeout(() => {
+                req.write(JSON.stringify(data))
+                req.end()
+            }, 150)
+        } else {
+            req.write(JSON.stringify(data))
+            req.end()
+        }
+    }).catch(err => {
+        return ANT_CONFIG.retryRequest.enable                // Are retries enables? 
+            && err.status !== 12                             // 12 - Too Many Requests
+            && retries < ANT_CONFIG.retryRequest.retries - 1 // Retry limit (default: 0)  
+            ? send(data, token, retries + 1)
+            : Promise.reject(err)
     })
-}
+} 
 
 function APIError(message: string): { [key: string]: string | number } {
     return {
