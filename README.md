@@ -31,8 +31,9 @@ About:
 - [Instalation](#Instalation) 
 - [Basic usage](#Basic-usage) 
 - [Ant anatomy](#Ant-anatomy) 
-- [Rich media, payload data handling](#rich-media-payload-data-handling)
 - [Deep linking](#deep-linking)
+- [Rich media, payload data handling](#rich-media-payload-data-handling)
+- [Request retries](#Request-retries)
 - [Config](#Config)
 - [Examples](#Examples)
 
@@ -279,22 +280,43 @@ Separator is equal to `$:` by default and can be changed using `richPayloadDataS
 So payload for expample will be equal to `'gift$:red'`.  
 
 
+## Request retries ##
+Ant:Viber can repeat your API requests via `sendMessage` method automatically. You just need to enable request retries using config `retryRequest.enable` parameter (retries are disabled by default). You also can set retries amount and interval.
+  
+Example: 
+```js
+const Ant = new AntViber(token, name, avatar, {
+    setStatus, getStatus,
+    retryRequest: {
+        enable: true,
+        retries: 3,
+        interval: 1000,
+    }
+})
+await Ant.sendMessage(user, [...]) // Potentially rejected messages
+```
+In this case request will be repeated for a maximum 3 times with 1 second interval (1000ms) if original request failed. Repeating works till successful request (status = 0) or out of retries. 
+
+
 ## Config ##
 Ant:Viber init config contain next fields:
 
 | field | type | default | description |
 |-------|------|---------|-------------|
-| `setStatus` | | | See [basic usage](#Basic-usage) 
-| `getStatus` | | | See [basic usage](#Basic-usage) 
-| `maskSeparator` | `string` | `:` | See [masks](#Masks)
+| `setStatus` | `Promise` | | See [basic usage](#Basic-usage).
+| `getStatus` | `Promise` | | See [basic usage](#Basic-usage). 
+| `maskSeparator` | `string` | `:` | See [masks](#Masks).
 | `richPayloadPrefix` | `string` | `[VCD]` | Prefix for marking payload source: rich media if message with prefix, either text or reply message otherwise. Using if internal Ant:Viber processes only.
 | `startButtonText` | `string` | `Start!` | Text on dialog start button (when new user subcribed), see [basic usage](#Basic-usage). Work only when `autoStartMessage=true`.
-| `richPayloadDataSeparator` | `string` | `$:` | See [Rich media, payload data handling](#rich-media-payload-data-handling)
+| `richPayloadDataSeparator` | `string` | `$:` | See [Rich media, payload data handling](#rich-media-payload-data-handling).
 | `autoStartMessage` | `boolean` | `true` | Default rich keyboard with start button will be send when user subscribed if `true` is passed.  
-| `keyboardSettings.backgroundColor` | `string` | `#FFFFFF` | RGA or HEX color of button panels (both reply and rich media) background
-| `keyboardSettings.buttonColor` | `string` | `#FFFFFF` | RGA or HEX color of button (background color)
-| `keyboardSettings.frameColor` | `string` | `#665CAC` | **Deprecated (v.<3.0.0)** RGA or HEX color of button frame 
-| `keyboardSettings.BorderWidth` | `number` | `0` | **Deprecated (v.<3.0.0)** Button border width in pixels.
+| `keyboardSettings.backgroundColor` | `string` | `#FFFFFF` | RGA or HEX color of button panels (both reply and rich media) background.
+| `keyboardSettings.buttonColor` | `string` | `#FFFFFF` | RGA or HEX color of button (background color).
+| `keyboardSettings.frameColor` | `string` | `#665CAC` | RGA or HEX color of button frame .
+| `keyboardSettings.BorderWidth` | `number` | `0` | Button border width in pixels.
+| `retryRequest.enable` | `boolean` | `false` | Repeat API request on error if `true` passed.
+| `retryRequest.retries` | `number` | `0` | Retries amount. Reject request only when out of retries.
+| `retryRequest.interval` | `number` | `100` | Retries interval in MS.  
 
 
 ## Examples ##
