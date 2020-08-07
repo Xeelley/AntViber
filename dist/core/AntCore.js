@@ -22,6 +22,7 @@ class AntCore extends events_1.EventEmitter {
             ReplyKeyboardButton: this._ReplyKeyboardButton.bind(this),
             RichKeyboardButton: this._RichKeyboardButton.bind(this),
             UrlKeyboardButton: this._UrlKeyboardButton.bind(this),
+            ImageKeyboardButton: this._ImageKeyboardButton.bind(this),
             ShareLocationButton: this._ShareLocationButton.bind(this),
             SharePhoneButton: this._SharePhoneButton.bind(this),
             TextMessage: this._TextMessage.bind(this),
@@ -202,6 +203,16 @@ class AntCore extends events_1.EventEmitter {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
+        };
+    }
+    _ImageKeyboardButton(imageUrl, type, payload, columns = 6, rows = 1) {
+        return {
+            ActionType: type,
+            ActionBody: payload,
+            Columns: columns,
+            Rows: rows,
+            BgColor: this.config.keyboardSettings.buttonColor,
+            Image: imageUrl,
         };
     }
     _ShareLocationButton(text, columns = 6, rows = 1) {

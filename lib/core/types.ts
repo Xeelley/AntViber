@@ -16,16 +16,18 @@ type IButtonActionType = 'open-url' | 'reply' | 'location-picker' | 'share-phone
 export interface IButton {
     ActionType: IButtonActionType;
     ActionBody: string;
-    Text: string;
+    Text?: string;
     Columns: number;
     Rows: number;
     BgColor: string;
+    Image?: string;
 }
 
 export interface ITypes {
     ReplyKeyboardButton(text: string, columns?: number, rows?: number): IButton;
     RichKeyboardButton(text: string, status: string, data: string, columns?: number, rows?: number): IButton;
     UrlKeyboardButton(text: string, url: string, columns?: number, rows?: number): IButton;
+    ImageKeyboardButton(imageUrl: string, type: 'open-url' | 'reply', payload: string, columns?: number, rows?: number): IButton;
     ShareLocationButton(text: string, columns?: number, rows?: number): IButton;
     SharePhoneButton(text: string, columns?: number, rows?: number): IButton;
     Keyboard(buttons: IButton[]): Viber.Message.Keyboard;

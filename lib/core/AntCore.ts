@@ -37,6 +37,7 @@ export class AntCore extends EventEmitter {
             ReplyKeyboardButton: this._ReplyKeyboardButton.bind(this),
             RichKeyboardButton:  this._RichKeyboardButton.bind(this),
             UrlKeyboardButton:   this._UrlKeyboardButton.bind(this),
+            ImageKeyboardButton: this._ImageKeyboardButton.bind(this),
             ShareLocationButton: this._ShareLocationButton.bind(this),
             SharePhoneButton:    this._SharePhoneButton.bind(this),
             TextMessage:         this._TextMessage.bind(this),
@@ -226,6 +227,16 @@ export class AntCore extends EventEmitter {
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
+        }
+    }
+    private _ImageKeyboardButton(imageUrl: string, type: 'open-url' | 'reply', payload: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
+        return {
+            ActionType: type,
+            ActionBody: payload,
+            Columns: columns,
+            Rows: rows,
+            BgColor: this.config.keyboardSettings.buttonColor,
+            Image: imageUrl,
         }
     }
     private _ShareLocationButton(text: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
