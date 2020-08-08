@@ -205,14 +205,15 @@ class AntCore extends events_1.EventEmitter {
             BgColor: this.config.keyboardSettings.buttonColor,
         };
     }
-    _ImageKeyboardButton(imageUrl, type, payload, columns = 6, rows = 1) {
+    _ImageKeyboardButton(imageUrl, buttonType, payload, imageType = 'picture', columns = 6, rows = 1) {
         return {
-            ActionType: type,
+            ActionType: buttonType,
             ActionBody: payload,
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Image: imageUrl,
+            BgMedia: imageUrl,
+            BgMediaType: imageType,
         };
     }
     _ShareLocationButton(text, columns = 6, rows = 1) {

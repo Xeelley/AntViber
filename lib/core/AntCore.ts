@@ -229,14 +229,15 @@ export class AntCore extends EventEmitter {
             BgColor: this.config.keyboardSettings.buttonColor,
         }
     }
-    private _ImageKeyboardButton(imageUrl: string, type: 'open-url' | 'reply', payload: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
+    private _ImageKeyboardButton(imageUrl: string, buttonType: 'open-url' | 'reply', payload: string, imageType: 'gif' | 'picture' = 'picture', columns: number = 6, rows: number = 1): AntTypes.IButton {
         return {
-            ActionType: type,
+            ActionType: buttonType,
             ActionBody: payload,
             Columns: columns,
             Rows: rows,
             BgColor: this.config.keyboardSettings.buttonColor,
-            Image: imageUrl,
+            BgMedia: imageUrl,
+            BgMediaType: imageType,
         }
     }
     private _ShareLocationButton(text: string, columns: number = 6, rows: number = 1): AntTypes.IButton {
