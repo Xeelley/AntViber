@@ -282,6 +282,11 @@ class AntCore extends events_1.EventEmitter {
             RestAPI.sendMessage(user, messages, this.connectionConfig).then(resolve).catch(reject);
         });
     }
+    sendMessageJSON(json) {
+        return new Promise((resolve, reject) => {
+            RestAPI.send(json, this.connectionConfig.token).then(resolve).catch(reject);
+        });
+    }
     addBasicListeners() {
         ['subscribed', 'unsubscribed'].forEach((type) => {
             this.on(type, (messages) => {

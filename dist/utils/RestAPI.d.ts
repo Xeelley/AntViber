@@ -8,3 +8,4 @@ export interface APIResponse {
     chat_hostname: string;
 }
 export declare function sendMessage(user: T.ViberUserProfile | string, messages: AntTypes.MessageType[], config: T.AntConnectionConfig): Promise<APIResponse[]>;
+export declare function send(data: any, token: string, retries?: number): Promise<APIResponse>;

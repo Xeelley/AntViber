@@ -35,6 +35,7 @@ export declare class AntCore extends EventEmitter {
     private _Sticker;
     private _File;
     sendMessage(user: T.ViberUserProfile | string, messages: AntTypes.MessageType[]): Promise<RestAPI.APIResponse[]>;
+    sendMessageJSON(json: Object | string): Promise<RestAPI.APIResponse>;
     private addBasicListeners;
     private checkStatus;
     private onError;

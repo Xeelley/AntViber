@@ -171,12 +171,12 @@ function send(data, token, retries = 0) {
         req.on('error', err => reject(err));
         if (retries) {
             setTimeout(() => {
-                req.write(JSON.stringify(data));
+                req.write(typeof data !== 'string' ? JSON.stringify(data) : data);
                 req.end();
             }, 150);
         }
         else {
-            req.write(JSON.stringify(data));
+            req.write(typeof data !== 'string' ? JSON.stringify(data) : data);
             req.end();
         }
     }).catch(err => {
@@ -187,6 +187,7 @@ function send(data, token, retries = 0) {
             : Promise.reject(err);
     });
 }
+exports.send = send;
 function APIError(message) {
     return {
         status: 3,

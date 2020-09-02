@@ -144,7 +144,7 @@ config: T.AntConnectionConfig): Promise<APIResponse> {
     })
 }
 
-function send(data: any, token: string, retries: number = 0): Promise<APIResponse> {
+export function send(data: any, token: string, retries: number = 0): Promise<APIResponse> {
     return new Promise<any>((resolve, reject) => {
         const req = request({
             hostname: VIBER_HOST,
@@ -175,11 +175,11 @@ function send(data: any, token: string, retries: number = 0): Promise<APIRespons
         req.on('error', err => reject(err))
         if (retries) {
             setTimeout(() => {
-                req.write(JSON.stringify(data))
+                req.write(typeof data !== 'string' ? JSON.stringify(data) : data)
                 req.end()
             }, 150)
         } else {
-            req.write(JSON.stringify(data))
+            req.write(typeof data !== 'string' ? JSON.stringify(data) : data)
             req.end()
         }
     }).catch(err => {

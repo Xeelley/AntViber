@@ -307,6 +307,12 @@ export class AntCore extends EventEmitter {
         })
     }
 
+    public sendMessageJSON(json: Object | string): Promise<RestAPI.APIResponse> {
+        return new Promise<RestAPI.APIResponse>((resolve, reject) => {
+            RestAPI.send(json, this.connectionConfig.token).then(resolve).catch(reject)
+        })
+    }
+
     private addBasicListeners() {
         [ 'subscribed', 'unsubscribed' ].forEach((type: T.AntViberEvent) => {
             this.on(type, (messages: T.Message[]) => {
